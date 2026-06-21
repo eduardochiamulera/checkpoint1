@@ -1,0 +1,51 @@
+## Add this file to the root of your C# project repository.
+
+# =========================================================================
+# 1. .NET & C# Core (Build Results, Artifacts, and Dependencies)
+# =========================================================================
+[Bb]in/
+[Oo]bj/
+[Log]s/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.nupkg
+
+# NuGet Packages
+# (Triggered automatically by package restore; do not commit)
+**/packages/*
+!**/packages/build/
+
+# =========================================================================
+# 2. JetBrains Rider & ReSharper Settings
+# =========================================================================
+# Excludes local IDE user preferences, window layouts, and caches
+.idea/
+*.sln.DotSettings.user
+_ReSharper.*/
+
+# =========================================================================
+# 3. Visual Studio Code Settings
+# =========================================================================
+# Excludes workspace-specific runtime files, paths, and history
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+*.code-workspace
+.history/
+
+# =========================================================================
+# 4. Operating System Files
+# =========================================================================
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
