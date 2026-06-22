@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Identity;
+
 namespace Cursos.Entites;
 
 public class Student
@@ -8,4 +10,6 @@ public class Student
     public DateTime DataCadastro { get; set; }
     public virtual ICollection<Enrollment> Enrollments { get; set; }
     public bool IsDeleted { get; set; }
+    public string UserId { get; set; }
+    public virtual IdentityUser User { get; set; }
 }
