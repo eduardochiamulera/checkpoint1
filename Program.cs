@@ -9,6 +9,9 @@ var connectionString = builder.Configuration["ConnectionStrings:appConnection"];
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
 
+builder.Services.AddDefaultIdentity()
+    .AddEntityFrameworkStores<ApplicationDbContext>();
+
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
@@ -20,6 +23,9 @@ if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
+
+app.UseAuthentication(); // antes de UseAuthorization
+app.UseAuthorization();
 
 app.UseHttpsRedirection();
 
