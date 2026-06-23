@@ -12,6 +12,11 @@ public class AppDbContext : IdentityDbContext<IdentityUser>
     public DbSet<Student> Students { get; set; }
     public DbSet<Enrollment> Enrollments { get; set; }
 
+    public AppDbContext(DbContextOptions<AppDbContext> dbContextOptions) : base(dbContextOptions)
+    {
+        
+    }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Student>()
