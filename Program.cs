@@ -69,4 +69,13 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+using (var scope = app.Services.CreateScope())
+{
+    var adminPassword = builder.Configuration["AdminUser:Password"]
+        ?? throw new InvalidOperationException(
+            "AdminUser:Password não configurado. Use: dotnet user-secrets set \"AdminUser:Password\" \"sua_senha\"");
+
+    await SeedData.SeedAsync(scope.ServiceProvider, adminPassword);
+}
+
 app.Run();
