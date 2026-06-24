@@ -84,6 +84,7 @@ app.UseExceptionHandler(err => err.Run(async ctx =>
     {
         KeyNotFoundException => (404, "Não encontrado."),
         ArgumentException    => (400, "Requisição inválida."),
+        InvalidOperationException => (400, "Requisição inválida."),
         _                    => (500, "Erro interno.")
     };
     ctx.Response.StatusCode = status;
