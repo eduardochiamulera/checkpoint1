@@ -11,7 +11,7 @@ public interface ICourseService
     Task<PaginatedResponse<CourseResponse>> GetPaginatedAsync(CoursePaginatedRequest request);
     Task<CourseResponse> GetByIdAsync(int id);
     Task<CourseResponse> UpdateCourseAsync(int id, CourseRequest request, string userId);
-    Task DeleteAsync(int id);
+    Task DeleteAsync(int id, string userId);
 }
 
 public class CourseService : ICourseService
@@ -133,7 +133,7 @@ public class CourseService : ICourseService
         );
     }
 
-    public async Task DeleteAsync(int id)
+    public async Task DeleteAsync(int id, string userId)
     {
         if(id < 1)
         {
@@ -144,7 +144,7 @@ public class CourseService : ICourseService
                         .ExecuteUpdateAsync(setters => setters
                             .SetProperty(x => x.IsDeleted, true)
                             .SetProperty(x => x.DataAlteracao, DateTime.Now)
-                            .SetProperty(x => x.UsuarioAlteracao, 1));
+                            .SetProperty(x => x.UsuarioAlteracao, userId));
 
         await _appDbContext.SaveChangesAsync();
     }

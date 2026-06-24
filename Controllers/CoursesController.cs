@@ -24,8 +24,7 @@ public class CoursesController : ControllerBase
     [Authorize(Roles = "Admin,Instructor")]
     public async Task<IResult> CreateAsync([FromBody]CourseRequest request)
     {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        var response = await _courseService.CreateCourseAsync(request, userId);
+        var response = await _courseService.CreateCourseAsync(request, GetUserid());
         return TypedResults.Created($"api/Courses/{response.id}", response);  
     }
 
@@ -51,9 +50,7 @@ public class CoursesController : ControllerBase
     [Authorize(Roles = "Admin,Instructor")]
     public async Task<IActionResult> UpdateAsync([FromRoute] int id, [FromBody]CourseRequest request)
     {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-        var response = await _courseService.UpdateCourseAsync(id, request, userId);
+        var response = await _courseService.UpdateCourseAsync(id, request, GetUserid());
         
         return Ok(response);  
     }
@@ -62,8 +59,13 @@ public class CoursesController : ControllerBase
     [Authorize(Roles = "Admin")] 
     public async Task<IActionResult> DeleteAsync([FromRoute] int id)
     {
-        await _courseService.DeleteAsync(id);
+        await _courseService.DeleteAsync(id, GetUserid());
 
         return NoContent();
+    }
+
+    private string GetUserid()
+    {
+        return User.FindFirstValue(ClaimTypes.NameIdentifier);
     }
 }
