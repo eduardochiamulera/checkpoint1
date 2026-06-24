@@ -7,10 +7,10 @@ namespace Cursos.Services;
 
 public interface ICourseService
 {
-    Task<CourseResponse> CreateCourseAsync(CourseRequest request);
+    Task<CourseResponse> CreateCourseAsync(CourseRequest request, string userId);
     Task<PaginatedResponse<CourseResponse>> GetPaginatedAsync(CoursePaginatedRequest request);
     Task<CourseResponse> GetByIdAsync(int id);
-    Task<CourseResponse> UpdateCourseAsync(int id, CourseRequest request);
+    Task<CourseResponse> UpdateCourseAsync(int id, CourseRequest request, string userId);
     Task DeleteAsync(int id);
 }
 
@@ -23,7 +23,7 @@ public class CourseService : ICourseService
         _appDbContext = appDbContext;
     }
 
-    public async Task<CourseResponse> CreateCourseAsync(CourseRequest request)
+    public async Task<CourseResponse> CreateCourseAsync(CourseRequest request, string userId)
     {
         ArgumentNullException.ThrowIfNull(request);
 
@@ -34,7 +34,7 @@ public class CourseService : ICourseService
             Categoria = request.categoria,
             CargaHoraria = request.cargaHoraria,
             DataCriacao = DateTime.Now,
-            UsuarioCriacao = 1,
+            UsuarioCriacao = userId,
         };
 
         await _appDbContext.Courses.AddAsync(entity);
@@ -49,7 +49,7 @@ public class CourseService : ICourseService
         );
     }
 
-    public async Task<CourseResponse> UpdateCourseAsync(int id, CourseRequest request)
+    public async Task<CourseResponse> UpdateCourseAsync(int id, CourseRequest request, string userId)
     {
         ArgumentNullException.ThrowIfNull(request);
 
@@ -60,7 +60,7 @@ public class CourseService : ICourseService
                             .SetProperty(x => x.Titulo, request.titulo)
                             .SetProperty(x => x.DataAlteracao, DateTime.Now)
                             .SetProperty(x => x.Descricao, request.descricao)
-                            .SetProperty(x => x.UsuarioAlteracao, 1));
+                            .SetProperty(x => x.UsuarioAlteracao, userId));
 
         await _appDbContext.SaveChangesAsync();
 
@@ -83,14 +83,22 @@ public class CourseService : ICourseService
 
         if (!string.IsNullOrWhiteSpace(request.orderBy))
         {
-            if( request.direction == "ASC")
+            query = request.orderBy?.ToLower() switch
             {
-                query = query.OrderBy(x => request.orderBy);
-            }
-            else
-            {
-                query = query.OrderByDescending(x => request.orderBy);
-            }
+                "titulo"      => request.direction == "ASC"
+                                    ? query.OrderBy(x => x.Titulo)
+                                    : query.OrderByDescending(x => x.Titulo),
+                "datacriacao" => request.direction == "ASC"
+                                    ? query.OrderBy(x => x.DataCriacao)
+                                    : query.OrderByDescending(x => x.DataCriacao),
+                "descricao" => request.direction == "ASC"
+                                    ? query.OrderBy(x => x.Descricao)
+                                    : query.OrderByDescending(x => x.Descricao),
+                "categoria" => request.direction == "ASC"
+                                    ? query.OrderBy(x => x.Categoria)
+                                    : query.OrderByDescending(x => x.Categoria),
+                _             => query.OrderBy(x => x.Id) // default
+            };
         }
 
         var items = await query
@@ -106,14 +114,14 @@ public class CourseService : ICourseService
     {
         if(id < 1)
         {
-            throw new Exception("Id inválido");
+            throw new ArgumentException("Id inválido.");
         }
 
         var entity = await _appDbContext.Courses.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
 
         if( entity == null || entity.IsDeleted)
         {
-            throw new Exception("Not Found");
+            throw new KeyNotFoundException("Curso não encontrado.");
         }
 
         return new CourseResponse(
@@ -129,7 +137,7 @@ public class CourseService : ICourseService
     {
         if(id < 1)
         {
-            throw new Exception("Id inválido");
+            throw new ArgumentException("Id inválido.");
         }
 
         await _appDbContext.Courses.Where(x => x.Id == id)

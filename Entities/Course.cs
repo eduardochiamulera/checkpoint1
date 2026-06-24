@@ -10,9 +10,9 @@ public class Course
     public DateTime DataCriacao { get; set; }
     public virtual ICollection<Enrollment> Enrollments { get; set; }
     public bool IsDeleted { get; set; }
-    public int UsuarioCriacao { get; set; }
+    public string UsuarioCriacao { get; set; }
 
     public DateTime? DataAlteracao { get; set; }
 
-    public int? UsuarioAlteracao { get; set; }
+    public string? UsuarioAlteracao { get; set; }
 }

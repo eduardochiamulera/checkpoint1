@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Cursos.Models;
 
@@ -13,10 +12,15 @@ public record CourseRequest(
     [Range(30, int.MaxValue, ErrorMessage = "A carga horária deve ser entre 30 e 999999 minutos.")]
     int cargaHoraria);
 
-public record CoursePaginatedRequest(int page = 1, int size = 10, IEnumerable<string> categories = null, string filter = null, string orderBy = null, string direction = "ASC");
+public record CoursePaginatedRequest(
+    int page = 1,
+    int size = 10,
+    string filter = null,
+    string orderBy = null,
+    string direction = "ASC")
 {
-    public IEnumerable<string> categories { get; init; } = categories ?? Enumerable.Empty<string>(); 
-};
+    public IEnumerable<string> categories { get; init; } = Enumerable.Empty<string>();
+}
 
 public record CourseResponse(int id, string titulo, string descricao, string categoria, int cargaHoraria);
 

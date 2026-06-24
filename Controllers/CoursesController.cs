@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Cursos.Models;
 using Cursos.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -23,7 +24,8 @@ public class CoursesController : ControllerBase
     [Authorize(Roles = "Admin,Instructor")]
     public async Task<IResult> CreateAsync([FromBody]CourseRequest request)
     {
-        var response = await _courseService.CreateCourseAsync(request);
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var response = await _courseService.CreateCourseAsync(request, userId);
         return TypedResults.Created($"api/Courses/{response.id}", response);  
     }
 
@@ -37,7 +39,7 @@ public class CoursesController : ControllerBase
         return Ok(response);
     }
 
-    [HttpGet("id")]
+    [HttpGet("{id}")]
     public async Task<IActionResult> GetByIdAsync([FromRoute] int id)
     {
         var response = await _courseService.GetByIdAsync(id);
@@ -45,16 +47,19 @@ public class CoursesController : ControllerBase
         return Ok(response);
     }
 
-    [HttpPut("id")]
+    [HttpPut("{id}")]
     [Authorize(Roles = "Admin,Instructor")]
     public async Task<IActionResult> UpdateAsync([FromRoute] int id, [FromBody]CourseRequest request)
     {
-        var response = await _courseService.UpdateCourseAsync(id, request);
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        var response = await _courseService.UpdateCourseAsync(id, request, userId);
         
         return Ok(response);  
     }
 
-    [HttpDelete("id")]
+    [HttpDelete("{id}")]
+    [Authorize(Roles = "Admin")] 
     public async Task<IActionResult> DeleteAsync([FromRoute] int id)
     {
         await _courseService.DeleteAsync(id);

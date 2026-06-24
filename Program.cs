@@ -1,6 +1,7 @@
 using System.Text;
 using Cursos.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -91,5 +92,18 @@ using (var scope = app.Services.CreateScope())
 
     await SeedData.SeedAsync(scope.ServiceProvider, adminPassword);
 }
+
+app.UseExceptionHandler(err => err.Run(async ctx =>
+{
+    var ex = ctx.Features.Get<IExceptionHandlerFeature>()?.Error;
+    var (status, title) = ex switch
+    {
+        KeyNotFoundException => (404, "Não encontrado."),
+        ArgumentException    => (400, "Requisição inválida."),
+        _                    => (500, "Erro interno.")
+    };
+    ctx.Response.StatusCode = status;
+    await ctx.Response.WriteAsJsonAsync(new { status, title, detail = ex?.Message });
+}));
 
 app.Run();
