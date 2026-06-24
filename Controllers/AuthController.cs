@@ -1,7 +1,5 @@
-using System.Security.Claims;
 using Cursos.Models;
 using Cursos.Services;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Cursos.Controllers;
@@ -35,12 +33,9 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("login")]
-    public async Task<IActionResult> GetPaginatedAsync([FromQuery]CoursePaginatedRequest request)
+    public async Task<IActionResult> Login([FromBody] LoginRequest request)
     {
-        request ??= new CoursePaginatedRequest();
-
-        var response = await _courseService.GetPaginatedAsync(request);
-
+        var response = await _authService.LoginAsync(request);
         return Ok(response);
     }
 }
