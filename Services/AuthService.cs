@@ -15,6 +15,7 @@ public interface IAuthService
     Task RegisterAsync(RegisterRequest request);
     Task<string> RegisterStudentAsync(RegisterStudentRequest request);
     Task<AuthResponse> LoginAsync(LoginRequest request);
+    Task UpdateEmailAsync(string id, string email);
 }
 
 public class AuthService : IAuthService
@@ -119,5 +120,24 @@ public class AuthService : IAuthService
         );
 
         return new AuthResponse(new JwtSecurityTokenHandler().WriteToken(token), expires);
+    }
+
+    public async Task UpdateEmailAsync(string id, string email)
+    {
+        ArgumentNullException.ThrowIfNull(id);
+        ArgumentNullException.ThrowIfNull(email);
+
+        var identityUser = await _userManager.FindByIdAsync(id) ?? throw new KeyNotFoundException("Usuário não encontrado.");
+
+        var emailTaken = await _userManager.FindByEmailAsync(email);
+
+        if (emailTaken != null && emailTaken.Id != id)
+        {
+            throw new ConflictException("Email já cadastrado.");
+        }
+
+        identityUser.Email    = email;
+        identityUser.UserName = email;
+        await _userManager.UpdateAsync(identityUser);
     }
 }

@@ -56,7 +56,12 @@ public class StudentService : IStudentService
     {
         ArgumentNullException.ThrowIfNull(request);
 
-        await GetByIdAsync(id, isAdmin, userId);
+        Student? user = await ValidateUserAsync(id, isAdmin, userId);
+
+        if(!user.Email.Equals(request.Email, StringComparison.InvariantCultureIgnoreCase))
+        {
+            await _authService.UpdateEmailAsync(user.UserId, request.Email);
+        }
 
         await _appDbContext.Students.Where(x => x.Id == id)
                         .ExecuteUpdateAsync(setters => setters
@@ -115,14 +120,26 @@ public class StudentService : IStudentService
 
     public async Task<StudentResponse> GetByIdAsync(int id, bool isAdmin, string userId)
     {
-        if(id < 1)
+        if (id < 1)
         {
             throw new ArgumentException("Id inválido.");
         }
 
+        Student? entity = await ValidateUserAsync(id, isAdmin, userId);
+
+        return new StudentResponse(
+            entity.Id,
+            entity.NomeCompleto,
+            entity.Email,
+            entity.Enrollments?.Select(x => new EnrollmentsResponse(x.Id, x.CourseId, x.StudentId, x.Status, x.DataMatricula)) ?? new List<EnrollmentsResponse>()
+        );
+    }
+
+    private async Task<Student?> ValidateUserAsync(int id, bool isAdmin, string userId)
+    {
         var entity = await _appDbContext.Students.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
 
-        if( entity == null || entity.IsDeleted)
+        if (entity == null || entity.IsDeleted)
         {
             throw new KeyNotFoundException("Estudante não encontrado.");
         }
@@ -132,12 +149,7 @@ public class StudentService : IStudentService
             throw new ForbiddenException("Acesso negado.");
         }
 
-        return new StudentResponse(
-            entity.Id,
-            entity.NomeCompleto,
-            entity.Email,
-            entity.Enrollments?.Select(x => new EnrollmentsResponse(x.Id, x.CourseId, x.StudentId, x.Status, x.DataMatricula)) ?? new List<EnrollmentsResponse>()
-        );
+        return entity;
     }
 
     public async Task DeleteAsync(int id, string userId)
