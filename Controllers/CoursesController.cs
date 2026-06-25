@@ -7,8 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 namespace Cursos.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
-public class CoursesController : ControllerBase
+[Route("api/v1/[controller]")]
+public class CoursesController : BaseController
 {
 
     private readonly ILogger<CoursesController> _logger;
@@ -62,10 +62,5 @@ public class CoursesController : ControllerBase
         await _courseService.DeleteAsync(id, GetUserid());
 
         return NoContent();
-    }
-
-    private string GetUserid()
-    {
-        return User.FindFirstValue(ClaimTypes.NameIdentifier);
     }
 }

@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Cursos.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/v1/[controller]")]
 public class AuthController : ControllerBase
 {
 
@@ -22,13 +22,6 @@ public class AuthController : ControllerBase
     public async Task<IActionResult> Register([FromBody] RegisterRequest request)
     {
         await _authService.RegisterAsync(request);
-        return Created();
-    }
-
-    [HttpPost("register/student")]
-    public async Task<IActionResult> RegisterStudent([FromBody] RegisterStudentRequest request)
-    {
-        await _authService.RegisterStudentAsync(request);
         return Created();
     }
 

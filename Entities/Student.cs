@@ -12,4 +12,9 @@ public class Student
     public bool IsDeleted { get; set; }
     public string UserId { get; set; }
     public virtual IdentityUser User { get; set; }
+    public string UsuarioCriacao { get; set; }
+
+    public DateTime? DataAlteracao { get; set; }
+
+    public string? UsuarioAlteracao { get; set; }
 }

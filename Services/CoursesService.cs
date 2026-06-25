@@ -69,7 +69,7 @@ public class CourseService : ICourseService
 
     public async Task<PaginatedResponse<CourseResponse>> GetPaginatedAsync(CoursePaginatedRequest request)
     {
-        var query = _appDbContext.Courses.AsQueryable().Where(x => !x.IsDeleted);
+        var query = _appDbContext.Courses.AsNoTracking().AsQueryable().Where(x => !x.IsDeleted);
 
         var totalItems = await query.CountAsync();
 
@@ -139,6 +139,14 @@ public class CourseService : ICourseService
         {
             throw new ArgumentException("Id inválido.");
         }
+
+         var exists = await _appDbContext.Courses.AnyAsync(x => x.Id == id && !x.IsDeleted);
+
+        if (!exists)
+        {
+            throw new KeyNotFoundException("Curso não encontrado.");
+        }
+
 
         await _appDbContext.Courses.Where(x => x.Id == id)
                         .ExecuteUpdateAsync(setters => setters

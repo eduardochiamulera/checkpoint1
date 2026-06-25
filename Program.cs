@@ -1,5 +1,7 @@
 using System.Text;
 using Cursos.Data;
+using Cursos.Exceptions;
+using Cursos.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Identity;
@@ -27,7 +29,8 @@ builder.Services.AddIdentityCore<IdentityUser>(options =>
 })
 .AddRoles<IdentityRole>()
 .AddEntityFrameworkStores<AppDbContext>()
-.AddDefaultTokenProviders();
+.AddDefaultTokenProviders()
+.AddSignInManager();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -67,14 +70,45 @@ builder.Services.AddControllers()
         };
     });
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc("v1", new() { Title = "Cursos API", Version = "v1" });
+
+    // Habilita o botão Authorize no Swagger para JWT
+    options.AddSecurityDefinition("Bearer", new()
+    {
+        Name         = "Authorization",
+        Type         = Microsoft.OpenApi.Models.SecuritySchemeType.Http,
+        Scheme       = "bearer",
+        BearerFormat = "JWT",
+        In           = Microsoft.OpenApi.Models.ParameterLocation.Header,
+        Description  = "Informe o token JWT. Ex: eyJhbGci..."
+    });
+
+    options.AddSecurityRequirement(new()
+    {
+        {
+            new() { Reference = new() { Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme, Id = "Bearer" } },
+            []
+        }
+    });
+});
+
+builder.Services.AddScoped<ICourseService, CourseService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IStudentService, StudentService>();
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
+    app.UseSwagger();
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/swagger/v1/swagger.json", "Cursos API v1");
+        options.RoutePrefix = string.Empty; // abre na raiz: https://localhost:xxxx/
+    });
 }
 
 app.UseExceptionHandler(err => err.Run(async ctx =>
@@ -86,6 +120,8 @@ app.UseExceptionHandler(err => err.Run(async ctx =>
         ArgumentException    => (400, "Requisição inválida."),
         InvalidOperationException => (400, "Requisição inválida."),
         UnauthorizedAccessException => (401, "Não autorizado."),
+        ConflictException => (409, "Conflito"),
+        ForbiddenException => (403, "Forbidden"),
         _                    => (500, "Erro interno.")
     };
     ctx.Response.StatusCode = status;

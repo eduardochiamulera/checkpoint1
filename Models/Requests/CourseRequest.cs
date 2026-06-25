@@ -11,3 +11,14 @@ public record CourseRequest(
     string categoria, 
     [Range(30, int.MaxValue, ErrorMessage = "A carga horária deve ser entre 30 e 999999 minutos.")]
     int cargaHoraria);
+
+public record StudentRequest(
+    [Required(ErrorMessage = "O nome é obrigatório.")]
+    string nomeCompleto,
+    [Required(ErrorMessage = "O email é obrigatório.")]
+    [EmailAddress]
+    string email,
+    [Required(ErrorMessage = "A senha é obrigatória.")]
+    string password
+
+);

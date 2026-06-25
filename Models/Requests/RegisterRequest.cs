@@ -14,10 +14,3 @@ public record RegisterRequest(
     [Required(ErrorMessage = "O papel é obrigatório.")]
     string Role  // "Admin", "Instructor"
 );
-
-public record RegisterStudentRequest(
-    [Required] [EmailAddress] string Email,
-    [Required] [MinLength(8)] string Password,
-    [Required] string NomeCompleto
-    // outros campos do Student...
-);
