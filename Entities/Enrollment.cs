@@ -7,8 +7,11 @@ public class Enrollment
     public int StudentId { get; set; }
     public EnrollmentStatus Status { get; set; }
     public DateTime DataMatricula { get; set; }
-    public virtual Student Student {get; set;}
-    public virtual Course Course {get; set;}
+    public DateTime? DataCancelamento { get; set; }
+    public string UsuarioCriacao { get; set; } = string.Empty;
+    public virtual Student Student { get; set; } = null!;
+    public virtual Course Course { get; set; } = null!;
+    public string UsuarioAlteracao { get; set; } = string.Empty;
 }
 
 public enum EnrollmentStatus { Ativo, Cancelado }
