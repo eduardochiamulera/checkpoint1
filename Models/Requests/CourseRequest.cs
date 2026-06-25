@@ -2,23 +2,15 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Cursos.Models;
 
+// CourseRequest.cs
+/// <summary>Dados para criação ou atualização de curso.</summary>
 public record CourseRequest(
-    [Required(ErrorMessage = "O título é obrigatório.")]
-    string titulo, 
-    [Required(ErrorMessage = "A descricao é obrigatória.")]
-    string descricao, 
-    [Required(ErrorMessage = "A categoria é obrigatória.")]
-    string categoria, 
-    [Range(30, int.MaxValue, ErrorMessage = "A carga horária deve ser entre 30 e 999999 minutos.")]
-    int cargaHoraria);
-
-public record StudentRequest(
-    [Required(ErrorMessage = "O nome é obrigatório.")]
-    string nomeCompleto,
-    [Required(ErrorMessage = "O email é obrigatório.")]
-    [EmailAddress]
-    string email,
-    [Required(ErrorMessage = "A senha é obrigatória.")]
-    string password
-
+    /// <example>Introdução ao C#</example>
+    [Required][StringLength(100, MinimumLength = 3)] string titulo,
+    /// <example>Curso voltado para iniciantes em C# e .NET</example>
+    [Required][StringLength(500, MinimumLength = 10)] string descricao,
+    /// <example>Programação</example>
+    [Required][StringLength(50, MinimumLength = 3)] string categoria,
+    /// <example>120</example>
+    [Range(30, int.MaxValue)] int cargaHoraria
 );

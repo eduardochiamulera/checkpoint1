@@ -5,18 +5,20 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>6d10c397-0e60-4827-bfad-239edd0eed66</UserSecretsId>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
-  <ItemGroup>
+<ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="9" />
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.4" />
-    <PackageReference Include="Microsoft.AspnetCore.Authentication.JwtBearer" Version="9" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.9.0" />
+    <PackageReference Include="Microsoft.OpenApi" Version="1.6.22" /> <!-- forçar v1 -->
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="9" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9" />    
-    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="9.0.0" />    
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9" />
+    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="9.0.0" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.18.0" />
-  </ItemGroup>
+</ItemGroup>
+
 
 </Project>

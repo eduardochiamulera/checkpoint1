@@ -2,15 +2,13 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Cursos.Models;
 
+// RegisterRequest.cs
+/// <summary>Dados para registro de usuário Admin ou Instructor.</summary>
 public record RegisterRequest(
-    [Required(ErrorMessage = "O email é obrigatório.")]
-    [EmailAddress(ErrorMessage = "Email inválido.")]
-    string Email,
-
-    [Required(ErrorMessage = "A senha é obrigatória.")]
-    [MinLength(8, ErrorMessage = "A senha deve ter no mínimo 8 caracteres.")]
-    string Password,
-
-    [Required(ErrorMessage = "O papel é obrigatório.")]
-    string Role  // "Admin", "Instructor"
+    /// <example>admin@cursos.com</example>
+    [Required][EmailAddress] string Email,
+    /// <example>Senha@123</example>
+    [Required][MinLength(8)] string Password,
+    /// <example>Admin</example>
+    [Required] string Role
 );

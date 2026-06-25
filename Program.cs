@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -72,24 +74,30 @@ builder.Services.AddControllers()
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddSwaggerGen(options =>
 {
-    options.SwaggerDoc("v1", new() { Title = "Cursos API", Version = "v1" });
+    options.SwaggerDoc("v1", new OpenApiInfo { Title = "Cursos API", Version = "v1" });
 
-    // Habilita o botão Authorize no Swagger para JWT
-    options.AddSecurityDefinition("Bearer", new()
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Name         = "Authorization",
-        Type         = Microsoft.OpenApi.Models.SecuritySchemeType.Http,
+        Type         = SecuritySchemeType.Http,
         Scheme       = "bearer",
         BearerFormat = "JWT",
-        In           = Microsoft.OpenApi.Models.ParameterLocation.Header,
-        Description  = "Informe o token JWT. Ex: eyJhbGci..."
+        In           = ParameterLocation.Header,
+        Description  = "Informe o token JWT obtido no endpoint /api/auth/login."
     });
 
-    options.AddSecurityRequirement(new()
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
         {
-            new() { Reference = new() { Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme, Id = "Bearer" } },
-            []
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id   = "Bearer"
+                }
+            },
+            Array.Empty<string>()
         }
     });
 });

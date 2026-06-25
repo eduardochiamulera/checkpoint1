@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Cursos.Controllers;
 
+/// <summary>Gerenciamento de matrículas de estudantes em cursos.</summary>
 [ApiController]
 [Route("api/[controller]")]
 [Authorize]
@@ -17,9 +18,20 @@ public class EnrollmentsController : ControllerBase
     public EnrollmentsController(IEnrollmentService enrollmentService)
         => _enrollmentService = enrollmentService;
 
-    // Admin matricula qualquer estudante passando studentId no body
-    [HttpPost("admin")]
-    [Authorize(Roles = "Admin")]
+    /// <summary>Matricula o próprio estudante autenticado em um curso.</summary>
+    /// <remarks>Requer role **Student**. O StudentId é resolvido automaticamente pelo token JWT.</remarks>
+    /// <response code="201">Matrícula realizada com sucesso.</response>
+    /// <response code="401">Não autenticado.</response>
+    /// <response code="403">Sem permissão. Requer role Student.</response>
+    /// <response code="404">Curso ou estudante não encontrado.</response>
+    /// <response code="409">Estudante já matriculado neste curso.</response>
+    [HttpPost]
+    [Authorize(Roles = "Student")]
+    [ProducesResponseType(typeof(EnrollmentResponse), 201)]
+    [ProducesResponseType(401)]
+    [ProducesResponseType(403)]
+    [ProducesResponseType(404)]
+    [ProducesResponseType(409)]
     public async Task<IActionResult> EnrollByAdmin([FromBody] EnrollmentAdminRequest request)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
@@ -27,9 +39,20 @@ public class EnrollmentsController : ControllerBase
         return Created($"/api/enrollments/{response.Id}", response);
     }
 
-    // Student se matricula — studentId vem do token, não do body
-    [HttpPost]
-    [Authorize(Roles = "Student")]
+    /// <summary>Admin matricula um estudante em um curso informando o StudentId.</summary>
+    /// <remarks>Requer role **Admin**.</remarks>
+    /// <response code="201">Matrícula realizada com sucesso.</response>
+    /// <response code="401">Não autenticado.</response>
+    /// <response code="403">Sem permissão. Requer Admin.</response>
+    /// <response code="404">Curso ou estudante não encontrado.</response>
+    /// <response code="409">Estudante já matriculado neste curso.</response>
+    [HttpPost("admin")]
+    [Authorize(Roles = "Admin")]
+    [ProducesResponseType(typeof(EnrollmentResponse), 201)]
+    [ProducesResponseType(401)]
+    [ProducesResponseType(403)]
+    [ProducesResponseType(404)]
+    [ProducesResponseType(409)]
     public async Task<IActionResult> EnrollSelf([FromBody] EnrollmentStudentRequest request)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
@@ -44,7 +67,17 @@ public class EnrollmentsController : ControllerBase
         return Created($"/api/enrollments/{response.Id}", response);
     }
 
-    [HttpGet("/api/students/{studentId}/enrollments")]
+    /// <summary>Lista as matrículas de um estudante com paginação e filtro por status.</summary>
+    /// <remarks>Acessível pelo **Admin** ou pelo **próprio estudante**.</remarks>
+    /// <response code="200">Lista paginada de matrículas.</response>
+    /// <response code="401">Não autenticado.</response>
+    /// <response code="403">Acesso negado.</response>
+    /// <response code="404">Estudante não encontrado.</response>
+    [HttpGet("/api/v1/students/{studentId}/enrollments")]
+    [ProducesResponseType(typeof(PaginatedResponse<EnrollmentResponse>), 200)]
+    [ProducesResponseType(401)]
+    [ProducesResponseType(403)]
+    [ProducesResponseType(404)]
     public async Task<IActionResult> GetByStudent(
         [FromRoute] int studentId,
         [FromQuery] EnrollmentPaginatedRequest request)
@@ -56,7 +89,19 @@ public class EnrollmentsController : ControllerBase
         return Ok(response);
     }
 
+    /// <summary>Cancela uma matrícula.</summary>
+    /// <remarks>Acessível pelo **Admin** ou pelo **próprio estudante**. Matrícula já cancelada retorna 400.</remarks>
+    /// <response code="200">Matrícula cancelada com sucesso.</response>
+    /// <response code="400">Matrícula já está cancelada.</response>
+    /// <response code="401">Não autenticado.</response>
+    /// <response code="403">Acesso negado.</response>
+    /// <response code="404">Matrícula não encontrada.</response>
     [HttpDelete("{id}")]
+    [ProducesResponseType(typeof(EnrollmentResponse), 200)]
+    [ProducesResponseType(400)]
+    [ProducesResponseType(401)]
+    [ProducesResponseType(403)]
+    [ProducesResponseType(404)]
     public async Task<IActionResult> Cancel([FromRoute] int id)
     {
         var userId  = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
