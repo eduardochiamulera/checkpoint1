@@ -4,9 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Cursos.Controllers;
 
-/// <summary>
-/// Gerenciamento de Usuarios admin e login
-/// </summary>
+/// <summary>Endpoints de autenticação e geração de token JWT.</summary>
 [ApiController]
 [Route("api/v1/[controller]")]
 public class AuthController : ControllerBase

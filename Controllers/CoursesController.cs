@@ -9,6 +9,7 @@ namespace Cursos.Controllers;
 /// <summary>Gerenciamento de cursos.</summary>
 [ApiController]
 [Route("api/v1/[controller]")]
+[Tags("Courses")]
 public class CoursesController : BaseController
 {
 

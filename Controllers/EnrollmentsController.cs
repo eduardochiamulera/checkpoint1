@@ -11,6 +11,7 @@ namespace Cursos.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [Authorize]
+[Tags("Enrollments")]
 public class EnrollmentsController : ControllerBase
 {
     private readonly IEnrollmentService _enrollmentService;
