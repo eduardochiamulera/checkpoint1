@@ -1,11 +1,6 @@
 using Cursos.Domain.Exceptions;
+using Cursos.Domain.Payments;
 
-namespace Cursos.Domain.Payments;
-
-/// <summary>
-/// Agregado Payment. Referencia Enrollment por identificador e não possui
-/// dependência de EF Core, gateway ou entidade de infraestrutura.
-/// </summary>
 public sealed class Payment
 {
     private readonly List<PaymentStatusTransition> _transitions = [];
@@ -13,7 +8,7 @@ public sealed class Payment
     private Payment(
         Guid id,
         Guid enrollmentId,
-        Guid studentId,
+        int studentId,
         Money amount,
         PaymentMethod method,
         string idempotencyKey,
@@ -32,18 +27,20 @@ public sealed class Payment
 
     public Guid Id { get; private set; }
     public Guid EnrollmentId { get; private set; }
-    public Guid StudentId { get; private set; }
+    public int StudentId { get; private set; }
     public Money Amount { get; private set; } = null!;
     public PaymentMethod Method { get; private set; } = null!;
     public string IdempotencyKey { get; private set; } = null!;
     public PaymentStatus Status { get; private set; }
     public DateTimeOffset CreatedAt { get; private set; }
     public DateTimeOffset UpdatedAt { get; private set; }
-    public IReadOnlyCollection<PaymentStatusTransition> Transitions => _transitions.AsReadOnly();
+
+    public IReadOnlyCollection<PaymentStatusTransition> Transitions =>
+        _transitions.AsReadOnly();
 
     public static Payment Create(
         Guid enrollmentId,
-        Guid studentId,
+        int studentId,
         Money amount,
         PaymentMethod method,
         string idempotencyKey,
@@ -51,22 +48,31 @@ public sealed class Payment
         Guid? id = null)
     {
         if (enrollmentId == Guid.Empty)
-            throw new DomainException("invalid_enrollment", "A matrícula é obrigatória.");
+            throw new DomainException(
+                "invalid_enrollment",
+                "A matrícula é obrigatória.");
 
-        if (studentId == Guid.Empty)
-            throw new DomainException("invalid_student", "O estudante é obrigatório.");
+        if (studentId == 0)
+            throw new DomainException(
+                "invalid_student",
+                "O estudante é obrigatório.");
 
         ArgumentNullException.ThrowIfNull(amount);
         ArgumentNullException.ThrowIfNull(method);
 
         var normalizedKey = idempotencyKey?.Trim();
         if (string.IsNullOrWhiteSpace(normalizedKey))
-            throw new DomainException("missing_idempotency_key", "A chave de idempotência é obrigatória.");
+            throw new DomainException(
+                "missing_idempotency_key",
+                "A chave de idempotência é obrigatória.");
 
         if (normalizedKey.Length > PaymentRules.MaxIdempotencyKeyLength)
-            throw new DomainException("invalid_idempotency_key", "A chave de idempotência excede o limite permitido.");
+            throw new DomainException(
+                "invalid_idempotency_key",
+                "A chave de idempotência excede o limite permitido.");
 
         var timestamp = now ?? DateTimeOffset.UtcNow;
+
         return new Payment(
             id ?? Guid.NewGuid(),
             enrollmentId,
@@ -77,7 +83,7 @@ public sealed class Payment
             timestamp);
     }
 
-    public void Confirm(DateTimeOffset? now = null, string? reason = null) =>
+     public void Confirm(DateTimeOffset? now = null, string? reason = null) =>
         TransitionTo(PaymentStatus.Paid, now, reason ?? "Pagamento confirmado.");
 
     public void Fail(string reason, DateTimeOffset? now = null) =>

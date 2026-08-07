@@ -90,6 +90,32 @@ dotnet ef database update
 dotnet ef database update NomeDaMigrationAnterior
 ```
 
+### Ordem das migrations
+
+As migrations devem ser aplicadas na ordem indicada pelo EF Core.
+
+```bash
+dotnet ef database update --context AppDataContext
+```
+
+A migration `AddPayments` depende das tabelas `Enrollments` e `AspNetUsers` já existentes.
+Ela cria `Payments`, `PaymentStatusTransitions`, constraints, FKs e índices.
+
+Para revisar o SQL antes da aplicação:
+
+```bash
+dotnet ef migrations script --context AppDataContext
+```
+
+Para testar rollback em desenvolvimento:
+
+```bash
+dotnet ef database update 0 --context AppDataContext
+dotnet ef database update --context AppDataContext
+```
+
+Não registrar em logs dados de cartão, CVV, número do cartão, `ProviderPaymentId` ou a chave de idempotência completa.
+
 ## Dados iniciais (Seed)
 
 Na primeira execução, o sistema cria automaticamente:

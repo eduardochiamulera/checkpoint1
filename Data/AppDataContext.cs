@@ -1,5 +1,7 @@
 
-using Cursos.Entites;
+using Cursos.Data.Configurations;
+using Cursos.Domain.Payments;
+using Cursos.Domains;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -11,6 +13,9 @@ public class AppDbContext : IdentityDbContext<IdentityUser>
     public DbSet<Course> Courses { get; set; }
     public DbSet<Student> Students { get; set; }
     public DbSet<Enrollment> Enrollments { get; set; }
+    public DbSet<Payment> Payments => Set<Payment>();
+    public DbSet<PaymentStatusTransition> PaymentStatusTransitions =>
+    Set<PaymentStatusTransition>();
 
     public AppDbContext(DbContextOptions<AppDbContext> dbContextOptions) : base(dbContextOptions)
     {
@@ -33,6 +38,9 @@ public class AppDbContext : IdentityDbContext<IdentityUser>
             .Property(e => e.Status)
             .HasConversion<string>()
             .HasDefaultValue(EnrollmentStatus.Ativo);
+
+        modelBuilder.ApplyConfiguration(new PaymentConfiguration());
+        modelBuilder.ApplyConfiguration(new PaymentStatusTransitionConfiguration());
 
         base.OnModelCreating(modelBuilder);
     }
