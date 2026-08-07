@@ -9,7 +9,7 @@ namespace Cursos.Controllers;
 
 /// <summary>Gerenciamento de matrículas de estudantes em cursos.</summary>
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/v1/[controller]")]
 [Authorize]
 [Tags("Enrollments")]
 public class EnrollmentsController : ControllerBase

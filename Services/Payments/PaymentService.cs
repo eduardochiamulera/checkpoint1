@@ -53,7 +53,8 @@ public sealed class PaymentService : IPaymentService
 
         if (existingPayment is not null)
         {
-            return ToResponse(existingPayment);
+            var externalPaymentId = await GetExternalReferenceAsync(existingPayment.Id, cancellationToken);
+            return PaymentResponseMapper.ToResponse(existingPayment, externalPaymentId);
         }
 
         var enrollment = await _dbContext.Enrollments.SingleOrDefaultAsync(value => value.Id == request.EnrollmentId, cancellationToken);
@@ -156,7 +157,7 @@ public sealed class PaymentService : IPaymentService
             payment.Id,
             payment.Status);
 
-        return ToResponse(payment);
+        return PaymentResponseMapper.ToResponse(payment, transaction.ExternalPaymentId);
     }
 
     public async Task<PaymentResponse> GetByIdAsync(
@@ -182,7 +183,9 @@ public sealed class PaymentService : IPaymentService
             throw new UnauthorizedAccessException();
         }
 
-        return ToResponse(payment);
+        var externalPaymentId = await GetExternalReferenceAsync(payment.Id, cancellationToken);
+
+        return PaymentResponseMapper.ToResponse(payment, externalPaymentId);
     }
 
     public async Task<IReadOnlyList<PaymentResponse>> ListAsync(
@@ -203,24 +206,33 @@ public sealed class PaymentService : IPaymentService
             .OrderByDescending(payment => payment.CreatedAt)
             .ToListAsync(cancellationToken);
 
-        return payments
-            .Select(ToResponse)
-            .ToList();
+        var response = await Task.WhenAll(payments.Select(async payment =>
+        {
+            var externalReference =
+                await GetExternalReferenceAsync(
+                    payment.Id,
+                    cancellationToken);
+
+            return PaymentResponseMapper.ToResponse(
+                payment,
+                externalReference);
+        }));
+
+        return response;
     }
 
-    private static PaymentResponse ToResponse(
-        Payment payment)
+    private async Task<string?> GetExternalReferenceAsync(
+    Guid paymentId, CancellationToken cancellationToken)
     {
-        return new PaymentResponse(
-            payment.Id,
-            payment.EnrollmentId,
-            payment.StudentId,
-            payment.Status,
-            payment.Amount.Amount,
-            payment.Amount.Currency,
-            payment.Method.Type,
-            payment.CreatedAt,
-            payment.UpdatedAt,
-            null);
+        return await _dbContext.PaymentGatewayTransactions
+            .AsNoTracking()
+            .Where(transaction =>
+                transaction.PaymentId == paymentId &&
+                transaction.ExternalPaymentId != null)
+            .OrderByDescending(transaction =>
+                transaction.OccurredAt)
+            .Select(transaction =>
+                transaction.ExternalPaymentId)
+            .FirstOrDefaultAsync(cancellationToken);
     }
 }

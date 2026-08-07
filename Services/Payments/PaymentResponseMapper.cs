@@ -5,19 +5,20 @@ namespace Cursos.Services.Payments;
 public static class PaymentResponseMapper
 {
     public static PaymentResponse ToResponse(
-        Payment payment)
+    Payment payment,
+    string? externalPaymentId)
     {
         return new PaymentResponse(
-            Id: payment.Id,
-            EnrollmentId: payment.EnrollmentId,
-            StudentId: payment.StudentId,
-            Status: payment.Status,
-            Amount: payment.Amount.Amount,
-            Currency: payment.Amount.Currency,
-            Method: payment.Method.Type,
-            CreatedAt: payment.CreatedAt,
-            UpdatedAt: payment.UpdatedAt,
-            ExternalReference: MaskExternalReference(payment.IdempotencyKey));
+            payment.Id,
+            payment.EnrollmentId,
+            payment.StudentId,
+            payment.Status,
+            payment.Amount.Amount,
+            payment.Amount.Currency,
+            payment.Method.Type,
+            payment.CreatedAt,
+            payment.UpdatedAt,
+            MaskExternalReference(externalPaymentId));
     }
 
     private static string? MaskExternalReference(

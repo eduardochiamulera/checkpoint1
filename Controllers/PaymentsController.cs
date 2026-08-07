@@ -54,7 +54,7 @@ public sealed class PaymentsController : ControllerBase
         if (string.IsNullOrWhiteSpace(userId))
             return Unauthorized();
 
-         var response = await _service.CreateAsync(
+        var response = await _service.CreateAsync(
         request,
         userId,
         idempotencyKey,
@@ -110,9 +110,6 @@ public sealed class PaymentsController : ControllerBase
             User.IsInRole("Admin"),
             cancellationToken);
 
-        // var response = payments.Select(payment => PaymentResponseMapper.ToResponse(payment))
-        //     .ToList();
-
-        return Ok();
+        return Ok(payments);
     }
 }
