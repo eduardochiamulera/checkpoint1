@@ -1,5 +1,4 @@
 using Cursos.Domain.Exceptions;
-using Cursos.Domains.Exceptions;
 using Cursos.Domains.Payments;
 
 namespace Cursos.Services.Payments;
