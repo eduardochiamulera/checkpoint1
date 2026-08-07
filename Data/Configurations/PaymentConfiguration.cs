@@ -1,3 +1,4 @@
+using Cursos.Data.Configurations;
 using Cursos.Domains;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -11,12 +12,46 @@ public sealed class PaymentConfiguration : IEntityTypeConfiguration<Payment>
         {
             table.HasCheckConstraint(
                 "CK_Payments_Amount_Positive",
-                "[Amount] > 0");
+                "`Amount` > 0");
 
             table.HasCheckConstraint(
                 "CK_Payments_Currency_Iso4217",
-                "LEN([Currency]) = 3 AND [Currency] = UPPER([Currency])");
+                "CHAR_LENGTH(`Currency`) = 3 " +
+                "AND `Currency` = UPPER(`Currency`)");
         });
+
+        builder.HasKey(payment => payment.Id);
+
+        builder.Property(payment => payment.EnrollmentId)
+            .IsRequired();
+
+        builder.Property(payment => payment.StudentId)
+            .IsRequired();
+
+        builder.Property(payment => payment.UserId)
+            .HasMaxLength(450)
+            .IsRequired();
+
+        builder.Property(payment => payment.Amount)
+            .HasPrecision(18, 2);
+
+        builder.Property(payment => payment.Status)
+            .HasConversion<int>()
+            .IsRequired();
+
+        builder.Property(payment => payment.IdempotencyKey)
+            .HasMaxLength(100)
+            .IsRequired();
+
+        builder.Property(payment => payment.CreatedAt)
+            .HasConversion(new UtcDateTimeOffsetConverter())
+            .HasColumnType("datetime(6)")
+            .IsRequired();
+
+        builder.Property(payment => payment.UpdatedAt)
+            .HasConversion(new UtcDateTimeOffsetConverter())
+            .HasColumnType("datetime(6)")
+            .IsRequired();
 
         builder.OwnsOne(
             payment => payment.Amount,
@@ -33,50 +68,7 @@ public sealed class PaymentConfiguration : IEntityTypeConfiguration<Payment>
                     .HasMaxLength(3)
                     .IsFixedLength()
                     .IsRequired();
-        });
-
-        builder.OwnsOne(
-            payment => payment.Method,
-            method =>
-            {
-                method.Property(value => value.Type)
-                    .HasColumnName("PaymentMethod")
-                    .HasConversion<int>()
-                    .IsRequired();
-
-                method.Property(value => value.Provider)
-                    .HasColumnName("Provider")
-                    .HasMaxLength(50);
-
-                method.Property(value => value.ProviderPaymentId)
-                    .HasColumnName("ProviderPaymentId")
-                    .HasMaxLength(200);
-        });
-
-        builder.HasKey(payment => payment.Id);
-
-        builder.Property(payment => payment.StudentId)
-            .IsRequired();
-        
-        builder.Property(payment => payment.UserId)
-            .HasMaxLength(450)
-            .IsRequired();
-
-        builder.Property(payment => payment.Status)
-            .HasConversion<int>()
-            .IsRequired();
-
-        builder.Property(payment => payment.IdempotencyKey)
-            .HasMaxLength(100)
-            .IsRequired();
-
-        builder.Property(payment => payment.CreatedAt)
-            .HasColumnType("datetimeoffset(3)")
-            .IsRequired();
-
-        builder.Property(payment => payment.UpdatedAt)
-            .HasColumnType("datetimeoffset(3)")
-            .IsRequired();
+            });
 
         builder.HasOne<Student>()
             .WithMany()
@@ -90,23 +82,11 @@ public sealed class PaymentConfiguration : IEntityTypeConfiguration<Payment>
             .HasPrincipalKey(user => user.Id)
             .OnDelete(DeleteBehavior.Restrict);
 
-
         builder.HasOne<Enrollment>()
             .WithMany()
             .HasForeignKey(payment => payment.EnrollmentId)
-            .OnDelete(DeleteBehavior.Restrict)
-            .HasConstraintName("FK_Payments_Enrollments_EnrollmentId");
-
-        builder.HasIndex(payment => payment.EnrollmentId)
-            .HasDatabaseName("IX_Payments_EnrollmentId");
-
-        builder.HasIndex(payment => payment.Status)
-            .HasDatabaseName("IX_Payments_Status");
-
-        builder.HasIndex(payment => payment.EnrollmentId)
-            .IsUnique()
-            .HasFilter("[Status] IN (1, 2)")
-            .HasDatabaseName("UX_Payments_Active_EnrollmentId");
+            .HasPrincipalKey(enrollment => enrollment.Id)
+            .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasIndex(payment => payment.StudentId)
             .HasDatabaseName("IX_Payments_StudentId");
@@ -127,11 +107,22 @@ public sealed class PaymentConfiguration : IEntityTypeConfiguration<Payment>
                     payment.IdempotencyKey
                 })
             .IsUnique()
-            .HasDatabaseName("UX_Payments_UserId_IdempotencyKey");
+            .HasDatabaseName(
+                "UX_Payments_UserId_IdempotencyKey");
 
-        builder.HasIndex(payment => payment.EnrollmentId)
+        builder.Property<int?>("ActivePaymentMarker")
+            .HasColumnType("int")
+            .HasComputedColumnSql(
+                "CASE " +
+                "WHEN `Status` IN (1, 2) THEN 1 " +
+                "ELSE NULL END",
+                stored: true);
+
+        builder.HasIndex(
+                "EnrollmentId",
+                "ActivePaymentMarker")
             .IsUnique()
-            .HasFilter("[Status] IN (1, 2)")
-            .HasDatabaseName("UX_Payments_Active_EnrollmentId");
+            .HasDatabaseName(
+                "UX_Payments_Active_EnrollmentId");
     }
 }

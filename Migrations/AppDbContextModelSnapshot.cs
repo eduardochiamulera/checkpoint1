@@ -22,44 +22,7 @@ namespace Cursos.Migrations
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
 
-            modelBuilder.Entity("Cursos.Domain.Payments.PaymentStatusTransition", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<long>("Id"));
-
-                    b.Property<int>("From")
-                        .HasColumnType("int")
-                        .HasColumnName("FromStatus");
-
-                    b.Property<DateTimeOffset>("OccurredAt")
-                        .HasColumnType("datetimeoffset(3)");
-
-                    b.Property<Guid?>("PaymentId")
-                        .HasColumnType("char(36)");
-
-                    b.Property<string>("Reason")
-                        .HasMaxLength(500)
-                        .HasColumnType("varchar(500)");
-
-                    b.Property<int>("To")
-                        .HasColumnType("int")
-                        .HasColumnName("ToStatus");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PaymentId", "OccurredAt")
-                        .HasDatabaseName("IX_PaymentStatusTransitions_Payment_OccurredAt");
-
-                    b.ToTable("PaymentStatusTransitions", null, t =>
-                        {
-                            t.HasCheckConstraint("CK_PaymentStatusTransitions_DifferentStatuses", "[From] <> [To]");
-                        });
-                });
-
-            modelBuilder.Entity("Cursos.Domains.Course", b =>
+            modelBuilder.Entity("Cursos.Entites.Course", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -100,10 +63,10 @@ namespace Cursos.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Courses");
+                    b.ToTable("Courses", (string)null);
                 });
 
-            modelBuilder.Entity("Cursos.Domains.Enrollment", b =>
+            modelBuilder.Entity("Cursos.Entites.Enrollment", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -144,10 +107,10 @@ namespace Cursos.Migrations
                     b.HasIndex("StudentId", "CourseId")
                         .IsUnique();
 
-                    b.ToTable("Enrollments");
+                    b.ToTable("Enrollments", (string)null);
                 });
 
-            modelBuilder.Entity("Cursos.Domains.Student", b =>
+            modelBuilder.Entity("Cursos.Entites.Student", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -190,7 +153,7 @@ namespace Cursos.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Students");
+                    b.ToTable("Students", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -389,81 +352,15 @@ namespace Cursos.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("Payment", b =>
+            modelBuilder.Entity("Cursos.Entites.Enrollment", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("char(36)");
-
-                    b.Property<DateTimeOffset>("CreatedAt")
-                        .HasColumnType("datetimeoffset(3)");
-
-                    b.Property<int>("EnrollmentId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("IdempotencyKey")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("varchar(100)");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
-                    b.Property<int>("StudentId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTimeOffset>("UpdatedAt")
-                        .HasColumnType("datetimeoffset(3)");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasMaxLength(450)
-                        .HasColumnType("varchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EnrollmentId")
-                        .IsUnique()
-                        .HasDatabaseName("UX_Payments_Active_EnrollmentId")
-                        .HasFilter("[Status] IN (1, 2)");
-
-                    b.HasIndex("Status")
-                        .HasDatabaseName("IX_Payments_Status");
-
-                    b.HasIndex("StudentId")
-                        .HasDatabaseName("IX_Payments_StudentId");
-
-                    b.HasIndex("UserId")
-                        .HasDatabaseName("IX_Payments_UserId");
-
-                    b.HasIndex("UserId", "IdempotencyKey")
-                        .IsUnique()
-                        .HasDatabaseName("UX_Payments_UserId_IdempotencyKey");
-
-                    b.ToTable("Payments", null, t =>
-                        {
-                            t.HasCheckConstraint("CK_Payments_Amount_Positive", "[Amount] > 0");
-
-                            t.HasCheckConstraint("CK_Payments_Currency_Iso4217", "LEN([Currency]) = 3 AND [Currency] = UPPER([Currency])");
-                        });
-                });
-
-            modelBuilder.Entity("Cursos.Domain.Payments.PaymentStatusTransition", b =>
-                {
-                    b.HasOne("Payment", null)
-                        .WithMany("Transitions")
-                        .HasForeignKey("PaymentId");
-                });
-
-            modelBuilder.Entity("Cursos.Domains.Enrollment", b =>
-                {
-                    b.HasOne("Cursos.Domains.Course", "Course")
+                    b.HasOne("Cursos.Entites.Course", "Course")
                         .WithMany("Enrollments")
                         .HasForeignKey("CourseId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Cursos.Domains.Student", "Student")
+                    b.HasOne("Cursos.Entites.Student", "Student")
                         .WithMany("Enrollments")
                         .HasForeignKey("StudentId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -474,7 +371,7 @@ namespace Cursos.Migrations
                     b.Navigation("Student");
                 });
 
-            modelBuilder.Entity("Cursos.Domains.Student", b =>
+            modelBuilder.Entity("Cursos.Entites.Student", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
                         .WithMany()
@@ -536,99 +433,14 @@ namespace Cursos.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Payment", b =>
-                {
-                    b.HasOne("Cursos.Domains.Enrollment", null)
-                        .WithMany()
-                        .HasForeignKey("EnrollmentId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("FK_Payments_Enrollments_EnrollmentId");
-
-                    b.HasOne("Cursos.Domains.Student", null)
-                        .WithMany()
-                        .HasForeignKey("StudentId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.OwnsOne("Cursos.Domain.Payments.PaymentMethod", "Method", b1 =>
-                        {
-                            b1.Property<Guid>("PaymentId")
-                                .HasColumnType("char(36)");
-
-                            b1.Property<string>("Provider")
-                                .HasMaxLength(50)
-                                .HasColumnType("varchar(50)")
-                                .HasColumnName("Provider");
-
-                            b1.Property<string>("ProviderPaymentId")
-                                .HasMaxLength(200)
-                                .HasColumnType("varchar(200)")
-                                .HasColumnName("ProviderPaymentId");
-
-                            b1.Property<int>("Type")
-                                .HasColumnType("int")
-                                .HasColumnName("PaymentMethod");
-
-                            b1.HasKey("PaymentId");
-
-                            b1.ToTable("Payments");
-
-                            b1.WithOwner()
-                                .HasForeignKey("PaymentId");
-                        });
-
-                    b.OwnsOne("Cursos.Domains.Payments.Money", "Amount", b1 =>
-                        {
-                            b1.Property<Guid>("PaymentId")
-                                .HasColumnType("char(36)");
-
-                            b1.Property<decimal>("Amount")
-                                .HasPrecision(18, 2)
-                                .HasColumnType("decimal(18,2)")
-                                .HasColumnName("Amount");
-
-                            b1.Property<string>("Currency")
-                                .IsRequired()
-                                .HasMaxLength(3)
-                                .HasColumnType("char(3)")
-                                .HasColumnName("Currency")
-                                .IsFixedLength();
-
-                            b1.HasKey("PaymentId");
-
-                            b1.ToTable("Payments");
-
-                            b1.WithOwner()
-                                .HasForeignKey("PaymentId");
-                        });
-
-                    b.Navigation("Amount")
-                        .IsRequired();
-
-                    b.Navigation("Method")
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Cursos.Domains.Course", b =>
+            modelBuilder.Entity("Cursos.Entites.Course", b =>
                 {
                     b.Navigation("Enrollments");
                 });
 
-            modelBuilder.Entity("Cursos.Domains.Student", b =>
+            modelBuilder.Entity("Cursos.Entites.Student", b =>
                 {
                     b.Navigation("Enrollments");
-                });
-
-            modelBuilder.Entity("Payment", b =>
-                {
-                    b.Navigation("Transitions");
                 });
 #pragma warning restore 612, 618
         }

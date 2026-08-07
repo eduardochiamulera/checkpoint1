@@ -104,10 +104,12 @@ dotnet ef database update \
   --context AppDataContext
 ```
 
-A migration de pagamentos será criada somente após a conclusão das configurações do domínio e do EF Core.
+A migration `PaymentsConfiguration` cria as tabelas:
 
-Ela deverá criar as tabelas `Payments` e `PaymentStatusTransitions`, com FKs,
-constraints, índices, regra de idempotência e unicidade de pagamento ativo por matrícula.
+- `Payments`;
+- `PaymentStatusTransitions`.
+
+Também são criadas as constraints, FKs e índices relacionados a pagamentos.
 
 ### Rollback em desenvolvimento
 

@@ -11,9 +11,9 @@ public sealed class PaymentStatusTransitionConfiguration
     {
         builder.ToTable("PaymentStatusTransitions", table =>
         {
-            table.HasCheckConstraint(
+           table.HasCheckConstraint(
                 "CK_PaymentStatusTransitions_DifferentStatuses",
-                "[From] <> [To]");
+                "`FromStatus` <> `ToStatus`");
         });
 
         builder.Property<long>("Id")
@@ -31,8 +31,11 @@ public sealed class PaymentStatusTransitionConfiguration
             .HasConversion<int>()
             .IsRequired();
 
+        builder.Property<Guid>("PaymentId").IsRequired();
+
         builder.Property(transition => transition.OccurredAt)
-            .HasColumnType("datetimeoffset(3)")
+            .HasConversion(new UtcDateTimeOffsetConverter())
+            .HasColumnType("datetime(6)")
             .IsRequired();
 
         builder.Property(transition => transition.Reason)
