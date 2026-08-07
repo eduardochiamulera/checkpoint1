@@ -189,34 +189,56 @@ public sealed class PaymentService : IPaymentService
     }
 
     public async Task<IReadOnlyList<PaymentResponse>> ListAsync(
-        string userId,
-        bool isAdmin,
-        CancellationToken cancellationToken = default)
+    string userId,
+    bool isAdmin,
+    CancellationToken cancellationToken)
     {
-        var query = _dbContext.Payments
-            .AsNoTracking();
-
-        if (!isAdmin)
-        {
-            query = query.Where(
-                payment => payment.UserId == userId);
-        }
-
-        var payments = await query
+        var payments = await _dbContext.Payments
+            .AsNoTracking()
+            .Where(payment =>
+                isAdmin ||
+                payment.UserId == userId)
             .OrderByDescending(payment => payment.CreatedAt)
             .ToListAsync(cancellationToken);
 
-        var response = await Task.WhenAll(payments.Select(async payment =>
-        {
-            var externalReference =
-                await GetExternalReferenceAsync(
-                    payment.Id,
-                    cancellationToken);
+        var paymentIds = payments
+            .Select(payment => payment.Id)
+            .ToList();
 
-            return PaymentResponseMapper.ToResponse(
-                payment,
-                externalReference);
-        }));
+        var externalReferences = await _dbContext
+            .PaymentGatewayTransactions
+            .AsNoTracking()
+            .Where(transaction =>
+                paymentIds.Contains(transaction.PaymentId) &&
+                transaction.ExternalPaymentId != null)
+            .GroupBy(transaction => transaction.PaymentId)
+            .Select(group => new
+            {
+                PaymentId = group.Key,
+                ExternalPaymentId = group
+                    .OrderByDescending(transaction =>
+                        transaction.OccurredAt)
+                    .Select(transaction =>
+                        transaction.ExternalPaymentId)
+                    .FirstOrDefault()
+            })
+            .ToDictionaryAsync(
+                value => value.PaymentId,
+                value => value.ExternalPaymentId,
+                cancellationToken);
+
+        var response = payments
+            .Select(payment =>
+            {
+                externalReferences.TryGetValue(
+                    payment.Id,
+                    out var externalPaymentId);
+
+                return PaymentResponseMapper.ToResponse(
+                    payment,
+                    externalPaymentId);
+            })
+            .ToList();
 
         return response;
     }
