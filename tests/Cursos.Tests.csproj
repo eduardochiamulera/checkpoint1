@@ -25,6 +25,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Cursos.csproj" />
+    <ProjectReference Include="..\src\Cursos.csproj" />
   </ItemGroup>
 
 </Project>
