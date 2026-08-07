@@ -1,7 +1,9 @@
 using System.Text;
 using Cursos.Data;
+using Cursos.Domains.Payments;
 using Cursos.Exceptions;
 using Cursos.Services;
+using Cursos.Services.Payments;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Identity;
@@ -106,6 +108,16 @@ builder.Services.AddScoped<ICourseService, CourseService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IStudentService, StudentService>();
 builder.Services.AddScoped<IEnrollmentService, EnrollmentService>();
+builder.Services.AddSingleton<IPaymentGateway, SimulatedPaymentGateway>();
+
+//CASO REAL
+// builder.Services.AddHttpClient<IPaymentGateway, RealPaymentGateway>(
+//     client =>
+//     {
+//         client.BaseAddress = new Uri(
+//             builder.Configuration["PaymentGateway:BaseUrl"]!);
+//         client.Timeout = TimeSpan.FromSeconds(10);
+//     });
 
 var app = builder.Build();
 

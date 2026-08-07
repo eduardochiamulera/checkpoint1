@@ -181,3 +181,36 @@ Com a aplicação rodando, acesse:
 - Swagger UI: [https://localhost:5001/swagger](https://localhost:5001/swagger)
 
 > Testes ainda não implementados nesta versão. Ver [CHANGELOG](./CHANGELOG.md).
+
+### Adapter de pagamento
+
+A aplicação utiliza `IPaymentGateway` para isolar a integração externa.
+
+A implementação atual é `SimulatedPaymentGateway`, registrada no DI como:
+
+```csharp
+builder.Services.AddSingleton<IPaymentGateway, SimulatedPaymentGateway>();
+```
+
+O gateway simulado possui respostas determinísticas:
+
+- chave normal: sucesso;
+- chave contendo `fail` ou `error`: falha;
+- chave contendo `decline`: pagamento recusado;
+- chave contendo `timeout`: timeout.
+
+A chave de idempotência é utilizada também no gateway simulado.
+Nenhum dado de cartão é armazenado ou enviado.
+
+Para trocar por um gateway real:
+
+1. Implemente `IPaymentGateway` em `RealPaymentGateway`.
+2. Use `HttpClient` e configuração externa para a URL do provedor.
+3. Armazene apenas IDs externos, recibos e status.
+4. Substitua o registro no `Program.cs`:
+
+```csharp
+builder.Services.AddHttpClient<IPaymentGateway, RealPaymentGateway>();
+```
+
+O domínio e os casos de uso não precisam ser alterados.

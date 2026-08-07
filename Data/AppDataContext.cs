@@ -2,6 +2,7 @@
 using Cursos.Data.Configurations;
 using Cursos.Domain.Payments;
 using Cursos.Domains;
+using Cursos.Domains.Payments;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -14,8 +15,9 @@ public class AppDbContext : IdentityDbContext<IdentityUser>
     public DbSet<Student> Students { get; set; }
     public DbSet<Enrollment> Enrollments { get; set; }
     public DbSet<Payment> Payments => Set<Payment>();
-    public DbSet<PaymentStatusTransition> PaymentStatusTransitions =>
-    Set<PaymentStatusTransition>();
+    public DbSet<PaymentStatusTransition> PaymentStatusTransitions => Set<PaymentStatusTransition>();
+
+    public DbSet<PaymentGatewayTransaction> PaymentGatewayTransactions => Set<PaymentGatewayTransaction>();
 
     public AppDbContext(DbContextOptions<AppDbContext> dbContextOptions) : base(dbContextOptions)
     {
@@ -41,6 +43,7 @@ public class AppDbContext : IdentityDbContext<IdentityUser>
 
         modelBuilder.ApplyConfiguration(new PaymentConfiguration());
         modelBuilder.ApplyConfiguration(new PaymentStatusTransitionConfiguration());
+        modelBuilder.ApplyConfiguration(new PaymentGatewayTransactionConfiguration());
 
         base.OnModelCreating(modelBuilder);
     }
