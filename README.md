@@ -214,3 +214,30 @@ builder.Services.AddHttpClient<IPaymentGateway, RealPaymentGateway>();
 ```
 
 O domínio e os casos de uso não precisam ser alterados.
+
+400 Bad Request
+- Amount ausente ou inválido.
+- EnrollmentId menor ou igual a zero.
+- Method ausente ou inválido.
+- Currency fora do formato.
+- Idempotency-Key ausente ou muito longa.
+
+401 Unauthorized
+- Token ausente.
+- Token inválido ou expirado.
+
+403 Forbidden
+- Student tentando acessar pagamento de outro usuário.
+
+404 Not Found
+- Pagamento ou matrícula inexistente.
+
+409 Conflict
+- Pagamento ativo já existente.
+- Idempotency-Key reutilizada com dados incompatíveis.
+
+422 Unprocessable Entity
+- Matrícula inativa.
+- Valor inválido para regra de negócio.
+- Pagamento recusado pelo gateway.
+- Transição de status inválida.

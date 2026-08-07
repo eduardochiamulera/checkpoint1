@@ -51,6 +51,7 @@ public sealed class Payment
     public static Payment Create(
         int enrollmentId,
         int studentId,
+        string userId,
         Money amount,
         PaymentMethod method,
         string idempotencyKey,
@@ -66,6 +67,11 @@ public sealed class Payment
             throw new DomainException(
                 "invalid_student",
                 "O estudante é obrigatório.");
+
+         if (string.IsNullOrWhiteSpace(userId))
+            throw new DomainException(
+                "invalid_user",
+                "O usuário é obrigatório.");
 
         ArgumentNullException.ThrowIfNull(amount);
         ArgumentNullException.ThrowIfNull(method);

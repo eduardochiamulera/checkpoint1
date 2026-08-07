@@ -108,7 +108,9 @@ builder.Services.AddScoped<ICourseService, CourseService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IStudentService, StudentService>();
 builder.Services.AddScoped<IEnrollmentService, EnrollmentService>();
-builder.Services.AddSingleton<IPaymentGateway, SimulatedPaymentGateway>();
+builder.Services.AddScoped<IPaymentService, PaymentService>();
+builder.Services.AddScoped<PaymentOwnershipService>();
+builder.Services.AddSingleton<IPaymentGateway,SimulatedPaymentGateway>();
 
 //CASO REAL
 // builder.Services.AddHttpClient<IPaymentGateway, RealPaymentGateway>(
@@ -118,6 +120,71 @@ builder.Services.AddSingleton<IPaymentGateway, SimulatedPaymentGateway>();
 //             builder.Configuration["PaymentGateway:BaseUrl"]!);
 //         client.Timeout = TimeSpan.FromSeconds(10);
 //     });
+
+builder.Services.AddProblemDetails(options =>
+{
+    options.CustomizeProblemDetails = context =>
+    {
+        context.ProblemDetails.Extensions["traceId"] =
+            context.HttpContext.TraceIdentifier;
+    };
+});
+
+builder.Services.AddExceptionHandler<ApiExceptionHandler>();
+
+builder.Services.Configure<ApiBehaviorOptions>(options =>
+{
+    options.InvalidModelStateResponseFactory = context =>
+    {
+        var errors = context.ModelState
+            .Where(entry => entry.Value?.Errors.Count > 0)
+            .ToDictionary(
+                entry => entry.Key,
+                entry => entry.Value!.Errors
+                    .Select(error =>
+                        string.IsNullOrWhiteSpace(error.ErrorMessage)
+                            ? "Valor inválido."
+                            : error.ErrorMessage)
+                    .ToArray());
+
+        var problem = new ValidationProblemDetails(errors)
+        {
+            Status = StatusCodes.Status400BadRequest,
+            Title = "Entrada inválida",
+            Detail = "Um ou mais campos possuem valores inválidos.",
+            Type = "https://httpstatuses.com/400"
+        };
+
+        problem.Extensions["code"] = "validation_error";
+        problem.Extensions["traceId"] =
+            context.HttpContext.TraceIdentifier;
+
+        return new BadRequestObjectResult(problem)
+        {
+            ContentTypes =
+            {
+                "application/problem+json"
+            }
+        };
+    };
+});
+
+builder.Services.Configure<Microsoft.AspNetCore.Http.Features.FormOptions>(
+    options =>
+    {
+        options.MultipartBodyLengthLimit = 1 * 1024 * 1024;
+    });
+
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.Limits.MaxRequestBodySize = 1 * 1024 * 1024;
+});
+
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.MaxDepth = 16;
+    });
 
 var app = builder.Build();
 
@@ -153,6 +220,9 @@ app.UseHttpsRedirection();
 
 app.UseAuthentication(); // antes de UseAuthorization
 app.UseAuthorization();
+
+app.UseExceptionHandler();
+app.UseStatusCodePages();
 
 app.MapControllers();
 
