@@ -1,4 +1,4 @@
-namespace Cursos.Entites;
+namespace Cursos.Domains;
 
 public class Enrollment
 {

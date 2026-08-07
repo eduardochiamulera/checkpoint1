@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 
-namespace Cursos.Entites;
+namespace Cursos.Domains;
 
 public class Student
 {
