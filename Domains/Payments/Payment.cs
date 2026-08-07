@@ -28,6 +28,7 @@ public sealed class Payment
     public Guid Id { get; private set; }
     public Guid EnrollmentId { get; private set; }
     public int StudentId { get; private set; }
+    public string UserId { get; private set; } = null!;
     public Money Amount { get; private set; } = null!;
     public PaymentMethod Method { get; private set; } = null!;
     public string IdempotencyKey { get; private set; } = null!;
