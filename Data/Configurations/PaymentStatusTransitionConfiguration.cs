@@ -1,5 +1,4 @@
 using Cursos.Domain.Payments;
-using Cursos.Domains.Payments;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

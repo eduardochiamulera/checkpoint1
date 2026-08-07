@@ -1,5 +1,5 @@
 using Cursos.Data;
-using Cursos.Entites;
+using Cursos.Domains;
 using Cursos.Models;
 using Microsoft.EntityFrameworkCore;
 

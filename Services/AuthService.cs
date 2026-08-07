@@ -2,7 +2,6 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Cursos.Data;
-using Cursos.Entites;
 using Cursos.Exceptions;
 using Cursos.Models;
 using Microsoft.AspNetCore.Identity;

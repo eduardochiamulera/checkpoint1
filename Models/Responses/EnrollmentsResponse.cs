@@ -1,4 +1,4 @@
-using Cursos.Entites;
+using Cursos.Domains;
 
 namespace Cursos.Models;
 

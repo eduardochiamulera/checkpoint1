@@ -23,10 +23,6 @@ public sealed class PaymentConfiguration : IEntityTypeConfiguration<Payment>
         builder.Property(payment => payment.StudentId)
             .IsRequired();
 
-        builder.Property(payment => payment.UserId)
-            .HasMaxLength(450)
-            .IsRequired();
-
         builder.Property(payment => payment.Status)
             .HasConversion<int>()
             .IsRequired();
@@ -50,13 +46,6 @@ public sealed class PaymentConfiguration : IEntityTypeConfiguration<Payment>
             .OnDelete(DeleteBehavior.Restrict)
             .HasConstraintName("FK_Payments_Students_StudentId");
 
-        builder.HasOne<IdentityUser>()
-            .WithMany()
-            .HasForeignKey(payment => payment.UserId)
-            .HasPrincipalKey(user => user.Id)
-            .OnDelete(DeleteBehavior.Restrict)
-            .HasConstraintName("FK_Payments_AspNetUsers_UserId");
-
         builder.HasOne<Enrollment>()
             .WithMany()
             .HasForeignKey(payment => payment.EnrollmentId)
@@ -66,23 +55,11 @@ public sealed class PaymentConfiguration : IEntityTypeConfiguration<Payment>
         builder.HasIndex(payment => payment.StudentId)
             .HasDatabaseName("IX_Payments_StudentId");
 
-        builder.HasIndex(payment => payment.UserId)
-            .HasDatabaseName("IX_Payments_UserId");
-
         builder.HasIndex(payment => payment.EnrollmentId)
             .HasDatabaseName("IX_Payments_EnrollmentId");
 
         builder.HasIndex(payment => payment.Status)
             .HasDatabaseName("IX_Payments_Status");
-
-        builder.HasIndex(payment =>
-                new
-                {
-                    payment.UserId,
-                    payment.IdempotencyKey
-                })
-            .IsUnique()
-            .HasDatabaseName("UX_Payments_UserId_IdempotencyKey");
 
         builder.HasIndex(payment => payment.EnrollmentId)
             .IsUnique()
