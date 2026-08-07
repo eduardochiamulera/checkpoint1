@@ -29,11 +29,10 @@ public sealed class PaymentConfiguration : IEntityTypeConfiguration<Payment>
             .IsRequired();
 
         builder.Property(payment => payment.UserId)
-            .HasMaxLength(450)
-            .IsRequired();
-
-        builder.Property(payment => payment.Amount)
-            .HasPrecision(18, 2);
+        .HasMaxLength(255)
+        .IsRequired()
+        .HasCharSet("utf8mb4")
+        .UseCollation("utf8mb4_0900_ai_ci");
 
         builder.Property(payment => payment.Status)
             .HasConversion<int>()
@@ -68,6 +67,24 @@ public sealed class PaymentConfiguration : IEntityTypeConfiguration<Payment>
                     .HasMaxLength(3)
                     .IsFixedLength()
                     .IsRequired();
+            });
+
+        builder.OwnsOne(
+            payment => payment.Method,
+            method =>
+            {
+                method.Property(value => value.Type)
+                    .HasColumnName("PaymentMethod")
+                    .HasConversion<int>()
+                    .IsRequired();
+
+                method.Property(value => value.Provider)
+                    .HasColumnName("Provider")
+                    .HasMaxLength(50);
+
+                method.Property(value => value.ProviderPaymentId)
+                    .HasColumnName("ProviderPaymentId")
+                    .HasMaxLength(200);
             });
 
         builder.HasOne<Student>()
