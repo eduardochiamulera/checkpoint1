@@ -1,13 +1,22 @@
 using Cursos.Domain.Exceptions;
 using Cursos.Domain.Payments;
+using Cursos.Domains.Payments;
 
 public sealed class Payment
 {
     private readonly List<PaymentStatusTransition> _transitions = [];
 
+    private Payment()
+    {
+        // Usado exclusivamente pelo EF Core.
+        Amount = null!;
+        Method = null!;
+        IdempotencyKey = null!;
+    }
+
     private Payment(
         Guid id,
-        Guid enrollmentId,
+        int enrollmentId,
         int studentId,
         Money amount,
         PaymentMethod method,
@@ -26,7 +35,7 @@ public sealed class Payment
     }
 
     public Guid Id { get; private set; }
-    public Guid EnrollmentId { get; private set; }
+    public int EnrollmentId { get; private set; }
     public int StudentId { get; private set; }
     public string UserId { get; private set; } = null!;
     public Money Amount { get; private set; } = null!;
@@ -40,7 +49,7 @@ public sealed class Payment
         _transitions.AsReadOnly();
 
     public static Payment Create(
-        Guid enrollmentId,
+        int enrollmentId,
         int studentId,
         Money amount,
         PaymentMethod method,
@@ -48,12 +57,12 @@ public sealed class Payment
         DateTimeOffset? now = null,
         Guid? id = null)
     {
-        if (enrollmentId == Guid.Empty)
+        if (enrollmentId <= 0)
             throw new DomainException(
                 "invalid_enrollment",
                 "A matrícula é obrigatória.");
 
-        if (studentId == 0)
+        if (studentId <= 0)
             throw new DomainException(
                 "invalid_student",
                 "O estudante é obrigatório.");

@@ -6,8 +6,12 @@ namespace Cursos.Domain.Payments;
 /// Contém somente dados não sensíveis do método de pagamento.
 /// Nunca armazenar número, CVV, validade ou trilha do cartão.
 /// </summary>
-public sealed record PaymentMethod
+public sealed class PaymentMethod
 {
+    private PaymentMethod()
+    {
+        
+    }
     public PaymentMethodType Type { get; }
     public string? Provider { get; }
     public string? ProviderPaymentId { get; }

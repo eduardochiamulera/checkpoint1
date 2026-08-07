@@ -3,7 +3,7 @@ namespace Cursos.Domain.Payments;
 public interface IPaymentUniquenessChecker
 {
     Task<bool> HasActivePaymentAsync(
-        Guid enrollmentId,
+        int enrollmentId,
         CancellationToken cancellationToken = default);
 
     Task<Payment?> FindByIdempotencyKeyAsync(

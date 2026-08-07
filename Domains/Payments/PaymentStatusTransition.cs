@@ -7,6 +7,10 @@ public sealed record PaymentStatusTransition
     public DateTimeOffset OccurredAt { get; }
     public string? Reason { get; }
 
+    private PaymentStatusTransition()
+    {
+    }
+
     private PaymentStatusTransition(
         PaymentStatus from,
         PaymentStatus to,

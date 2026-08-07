@@ -18,9 +18,48 @@ public sealed class PaymentConfiguration : IEntityTypeConfiguration<Payment>
                 "LEN([Currency]) = 3 AND [Currency] = UPPER([Currency])");
         });
 
+        builder.OwnsOne(
+            payment => payment.Amount,
+            money =>
+            {
+                money.Property(value => value.Amount)
+                    .HasColumnName("Amount")
+                    .HasPrecision(18, 2)
+                    .IsRequired();
+
+                money.Property(value => value.Currency)
+                    .HasColumnName("Currency")
+                    .HasColumnType("char(3)")
+                    .HasMaxLength(3)
+                    .IsFixedLength()
+                    .IsRequired();
+        });
+
+        builder.OwnsOne(
+            payment => payment.Method,
+            method =>
+            {
+                method.Property(value => value.Type)
+                    .HasColumnName("PaymentMethod")
+                    .HasConversion<int>()
+                    .IsRequired();
+
+                method.Property(value => value.Provider)
+                    .HasColumnName("Provider")
+                    .HasMaxLength(50);
+
+                method.Property(value => value.ProviderPaymentId)
+                    .HasColumnName("ProviderPaymentId")
+                    .HasMaxLength(200);
+        });
+
         builder.HasKey(payment => payment.Id);
 
         builder.Property(payment => payment.StudentId)
+            .IsRequired();
+        
+        builder.Property(payment => payment.UserId)
+            .HasMaxLength(450)
             .IsRequired();
 
         builder.Property(payment => payment.Status)

@@ -79,16 +79,50 @@ O Swagger abre na raiz. Para autenticar:
 
 ## Migrations
 
+As migrations devem ser executadas na ordem criada pelo Entity Framework Core.
+
+### Criar uma migration
+
 ```bash
-# Criar nova migration
-dotnet ef migrations add NomeDaMigration
-
-# Aplicar migrations pendentes
-dotnet ef database update
-
-# Reverter última migration
-dotnet ef database update NomeDaMigrationAnterior
+dotnet ef migrations add NomeDaMigration \
+  --context AppDataContext \
+  --output-dir Migrations
 ```
+
+### Revisar o SQL
+
+```bash
+dotnet ef migrations script \
+  --context AppDataContext \
+  --output migrations.sql
+```
+
+### Aplicar migrations
+
+```bash
+dotnet ef database update \
+  --context AppDataContext
+```
+
+A migration de pagamentos será criada somente após a conclusão das configurações do domínio e do EF Core.
+
+Ela deverá criar as tabelas `Payments` e `PaymentStatusTransitions`, com FKs,
+constraints, índices, regra de idempotência e unicidade de pagamento ativo por matrícula.
+
+### Rollback em desenvolvimento
+
+```bash
+dotnet ef database update 0 \
+  --context AppDataContext
+
+dotnet ef database update \
+  --context AppDataContext
+```
+
+O rollback deve ser executado somente em banco de desenvolvimento.
+
+Não registrar em logs dados de cartão, CVV, número do cartão,
+`ProviderPaymentId` ou a chave de idempotência completa.
 
 ### Ordem das migrations
 
@@ -137,5 +171,11 @@ Na primeira execução, o sistema cria automaticamente:
 ```bash
 dotnet test
 ```
+
+Com a aplicação rodando, acesse:
+
+- Swagger UI: [http://localhost:5000/swagger](http://localhost:5000/swagger)
+- API: [http://localhost:5000](http://localhost:5000)
+- Swagger UI: [https://localhost:5001/swagger](https://localhost:5001/swagger)
 
 > Testes ainda não implementados nesta versão. Ver [CHANGELOG](./CHANGELOG.md).
