@@ -1,3 +1,4 @@
+using Cursos.Application.Auth;
 using Cursos.Application.Common;
 
 namespace Cursos.Application.Auth.AuthenticateUser;
