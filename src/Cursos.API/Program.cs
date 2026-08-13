@@ -1,7 +1,9 @@
 using Cursos.Application;
 using Cursos.Infrastructure;
+using Cursos.Infrastructure.Data;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -46,6 +48,24 @@ app.UseHttpsRedirection();
 app.UseCors("AllowAll");
 app.UseExceptionHandler();
 app.MapControllers();
+
+// Apply migrations and seed data automatically (development only)
+if (app.Environment.IsDevelopment())
+{
+    using var scope = app.Services.CreateScope();
+    var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    
+    try
+    {
+        await context.Database.MigrateAsync();
+        await SeedData.InitializeAsync(context);
+        Console.WriteLine("Database migrated and seeded successfully!");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Error migrating/seeding database: {ex.Message}");
+    }
+}
 
 app.Run();
 
