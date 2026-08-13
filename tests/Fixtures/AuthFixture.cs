@@ -5,6 +5,16 @@ using System.Threading.Tasks;
 
 namespace Cursos.Tests.Fixtures;
 
+/// <summary>
+/// Registers and logs in a user through the real Cursos.API auth endpoints,
+/// returning the JWT access token.
+/// Routes and payloads MUST match src/Cursos.API/Controllers/AuthController.cs:
+///   POST /api/auth/register  { email, password, name, phone? }
+///   POST /api/auth/login     { email, password }
+/// Response shape matches Cursos.Application.Auth.AuthResultDto (property: Token).
+/// NOTE: the current User entity has no assignable "role" on registration -
+/// every new user gets the default "User" role.
+/// </summary>
 public sealed class AuthFixture
 {
     private readonly HttpClient _client;
@@ -17,21 +27,21 @@ public sealed class AuthFixture
     public async Task<string> RegisterAndLoginAsync(
         string email,
         string password,
-        string role)
+        string name)
     {
         var registerResponse = await _client.PostAsJsonAsync(
-            "/api/v1/auth/register",
+            "/api/auth/register",
             new
             {
                 email,
                 password,
-                role
+                name
             });
 
         registerResponse.EnsureSuccessStatusCode();
 
         var loginResponse = await _client.PostAsJsonAsync(
-            "/api/v1/auth/login",
+            "/api/auth/login",
             new
             {
                 email,
@@ -41,13 +51,15 @@ public sealed class AuthFixture
         loginResponse.EnsureSuccessStatusCode();
 
         var payload = await loginResponse.Content
-            .ReadFromJsonAsync<LoginResponse>();
+            .ReadFromJsonAsync<AuthResultTestModel>();
 
-        return payload?.AccessToken
-            ?? throw new InvalidOperationException(
-                "O login não retornou accessToken.");
+        return payload?.Token
+            ?? throw new InvalidOperationException("O login nao retornou token.");
     }
 
-    private sealed record LoginResponse(
-        string AccessToken);
+    private sealed record AuthResultTestModel(
+        bool Success,
+        string? Token,
+        string? RefreshToken,
+        string? ErrorMessage);
 }
