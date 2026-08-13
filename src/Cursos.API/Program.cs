@@ -1,22 +1,15 @@
 using Cursos.Application;
 using Cursos.Infrastructure;
 using Cursos.Infrastructure.Data;
+using Cursos.Infrastructure.Security;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.HealthChecks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using System;
-using System.Collections.Generic;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -37,7 +30,7 @@ builder.Services.AddSwaggerGen(options =>
     {
         Title = "Cursos API",
         Version = "v1",
-        Description = "API de cursos com autenticao JWT"
+        Description = "API de cursos com autenticacao JWT"
     });
     
     // Add JWT authentication to Swagger
@@ -88,6 +81,16 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddAuthorization();
 
+// Health Checks
+builder.Services.AddHealthChecks()
+    .AddCheck("self", () => HealthCheckResult.Healthy("API is running"))
+    .AddSqlServer(
+        connectionString: builder.Configuration.GetConnectionString("DefaultConnection")!,
+        healthQuery: "SELECT 1",
+        name: "sql-server",
+        failureStatus: HealthStatus.Unhealthy,
+        tags: new[] { "database", "sql" });
+
 // Exception Handling
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
@@ -105,6 +108,9 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
+// Logging Middleware
+app.UseMiddleware<Cursos.API.Middleware.LoggingMiddleware>();
+
 // Pipeline
 if (app.Environment.IsDevelopment())
 {
@@ -117,6 +123,14 @@ app.UseCors("AllowAll");
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseExceptionHandler();
+
+// Health Checks endpoint
+app.MapHealthChecks("/health");
+app.MapHealthChecks("/health/ready", new HealthCheckOptions
+{
+    Predicate = check => check.Tags.Contains("database")
+});
+
 app.MapControllers();
 
 // Apply migrations and seed data automatically (development only)
