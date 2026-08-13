@@ -1,3 +1,4 @@
+using System;
 using Cursos.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;

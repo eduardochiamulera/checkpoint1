@@ -1,14 +1,19 @@
-using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using Cursos.Application.Auth.Login;
+using MediatR;
 
 namespace Cursos.Application.Auth.Register;
 
 public class RegisterHandler : IRequestHandler<RegisterCommand, AuthResultDto>
 {
-    private readonly ILogger<RegisterHandler> _logger;
     
-    public RegisterHandler(ILogger<RegisterHandler> logger)
+    
+    public RegisterHandler()
     {
-        _logger = logger;
+        // _logger = logger;
     }
     
     public async Task<AuthResultDto> Handle(
@@ -18,7 +23,7 @@ public class RegisterHandler : IRequestHandler<RegisterCommand, AuthResultDto>
         // TODO: Implement actual registration logic
         // This is a placeholder - should integrate with Identity or similar
         
-        _logger.LogInformation("Registration attempt for email: {Email}", request.Email);
+        // _logger.LogInformation("Registration attempt for email: {Email}", request.Email);
         
         // Validate input
         if (string.IsNullOrWhiteSpace(request.Email) || !request.Email.Contains("@"))

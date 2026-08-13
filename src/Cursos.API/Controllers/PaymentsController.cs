@@ -1,6 +1,10 @@
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 using Cursos.Application.Payments.GetPaymentByEnrollment;
 using Cursos.Application.Payments.ProcessPayment;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Cursos.API.Controllers;

@@ -1,9 +1,14 @@
+using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using Cursos.Application.Students.CreateStudent;
 using Cursos.Application.Students.DeleteStudent;
 using Cursos.Application.Students.GetAllStudents;
 using Cursos.Application.Students.GetStudentById;
 using Cursos.Application.Students.UpdateStudent;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Cursos.API.Controllers;

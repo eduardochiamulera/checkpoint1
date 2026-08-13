@@ -1,3 +1,5 @@
+using System;
+
 namespace Cursos.Domain.Common;
 
 public abstract class Entity

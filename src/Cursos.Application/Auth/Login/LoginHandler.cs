@@ -1,14 +1,16 @@
-using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using MediatR;
 
 namespace Cursos.Application.Auth.Login;
 
 public class LoginHandler : IRequestHandler<LoginCommand, AuthResultDto>
 {
-    private readonly ILogger<LoginHandler> _logger;
     
-    public LoginHandler(ILogger<LoginHandler> logger)
+    public LoginHandler()
     {
-        _logger = logger;
     }
     
     public async Task<AuthResultDto> Handle(
@@ -18,7 +20,7 @@ public class LoginHandler : IRequestHandler<LoginCommand, AuthResultDto>
         // TODO: Implement actual authentication logic
         // This is a placeholder - should integrate with Identity or similar
         
-        _logger.LogInformation("Login attempt for email: {Email}", request.Email);
+        // _logger.LogInformation("Login attempt for email: {Email}", request.Email);
         
         // Simulated login - replace with actual auth logic
         var isValidCredentials = request.Email.Contains("@") && request.Password.Length >= 6;

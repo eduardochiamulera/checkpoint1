@@ -1,3 +1,7 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
 namespace Cursos.Domain.Common;
 
 public abstract class ValueObject : IEquatable<ValueObject>

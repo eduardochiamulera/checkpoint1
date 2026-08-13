@@ -1,3 +1,5 @@
+using System;
+
 namespace Cursos.Application.Students.CreateStudent;
 
 public record StudentDto(

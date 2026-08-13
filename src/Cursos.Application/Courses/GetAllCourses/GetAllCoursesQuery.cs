@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Cursos.Application.Common;
 
 namespace Cursos.Application.Courses.GetAllCourses;

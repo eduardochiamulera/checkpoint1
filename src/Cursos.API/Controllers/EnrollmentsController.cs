@@ -1,9 +1,14 @@
+using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using Cursos.Application.Enrollments.CancelEnrollment;
 using Cursos.Application.Enrollments.CompleteEnrollment;
 using Cursos.Application.Enrollments.CreateEnrollment;
 using Cursos.Application.Enrollments.GetEnrollmentsByCourse;
 using Cursos.Application.Enrollments.GetEnrollmentsByStudent;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Cursos.API.Controllers;

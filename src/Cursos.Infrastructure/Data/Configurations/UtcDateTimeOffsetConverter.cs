@@ -1,3 +1,4 @@
+using System;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Cursos.Infrastructure.Data.Configurations;

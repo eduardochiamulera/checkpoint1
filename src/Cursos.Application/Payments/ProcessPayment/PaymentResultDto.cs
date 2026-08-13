@@ -1,3 +1,5 @@
+using System;
+
 namespace Cursos.Application.Payments.ProcessPayment;
 
 public record PaymentResultDto(

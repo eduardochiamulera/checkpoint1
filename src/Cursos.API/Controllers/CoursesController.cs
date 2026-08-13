@@ -1,6 +1,11 @@
+using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using Cursos.Application.Courses.CreateCourse;
 using Cursos.Application.Courses.GetAllCourses;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Cursos.API.Controllers;
@@ -17,8 +22,8 @@ public class CoursesController : ControllerBase
     }
     
     [HttpGet]
-    [ProducesResponseType(typeof(IEnumerable<CourseDto>), StatusCodes.Status200OK)]
-    public async Task<ActionResult<IEnumerable<CourseDto>>> GetAll(
+    [ProducesResponseType(typeof(IEnumerable<Application.Courses.GetAllCourses.CourseDto>), StatusCodes.Status200OK)]
+    public async Task<ActionResult<IEnumerable<Application.Courses.GetAllCourses.CourseDto>>> GetAll(
         [FromQuery] int skip = 0,
         [FromQuery] int take = 50,
         CancellationToken cancellationToken = default)
@@ -29,9 +34,9 @@ public class CoursesController : ControllerBase
     }
     
     [HttpGet("{id:guid}")]
-    [ProducesResponseType(typeof(CourseDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(Application.Courses.GetAllCourses.CourseDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<CourseDto>> GetById(
+    public async Task<ActionResult<Application.Courses.GetAllCourses.CourseDto>> GetById(
         Guid id,
         CancellationToken cancellationToken)
     {
@@ -41,9 +46,9 @@ public class CoursesController : ControllerBase
     }
     
     [HttpPost]
-    [ProducesResponseType(typeof(CourseDto), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(Application.Courses.CreateCourse.CourseDto), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<CourseDto>> Create(
+    public async Task<ActionResult<Application.Courses.CreateCourse.CourseDto>> Create(
         [FromBody] CreateCourseCommand command,
         CancellationToken cancellationToken)
     {

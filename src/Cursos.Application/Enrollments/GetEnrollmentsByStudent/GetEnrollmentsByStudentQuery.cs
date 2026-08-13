@@ -1,4 +1,7 @@
+using System;
+using System.Collections.Generic;
 using Cursos.Application.Common;
+using Cursos.Application.Enrollments.CreateEnrollment;
 
 namespace Cursos.Application.Enrollments.GetEnrollmentsByStudent;
 

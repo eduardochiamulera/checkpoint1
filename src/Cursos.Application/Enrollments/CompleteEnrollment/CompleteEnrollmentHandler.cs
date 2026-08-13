@@ -1,4 +1,10 @@
+using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using Cursos.Application.Enrollments.CreateEnrollment;
 using Cursos.Domain.Interfaces;
+using MediatR;
 
 namespace Cursos.Application.Enrollments.CompleteEnrollment;
 

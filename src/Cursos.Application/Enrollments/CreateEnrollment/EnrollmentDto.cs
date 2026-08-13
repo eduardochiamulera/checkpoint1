@@ -1,3 +1,5 @@
+using System;
+
 namespace Cursos.Application.Enrollments.CreateEnrollment;
 
 public record EnrollmentDto(

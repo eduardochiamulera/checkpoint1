@@ -1,4 +1,6 @@
+using System;
 using Cursos.Application.Common;
+using Cursos.Application.Students.CreateStudent;
 
 namespace Cursos.Application.Students.UpdateStudent;
 

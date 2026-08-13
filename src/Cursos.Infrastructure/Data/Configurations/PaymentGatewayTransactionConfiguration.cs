@@ -1,3 +1,5 @@
+using System;
+using Cursos.Domain.Payments;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

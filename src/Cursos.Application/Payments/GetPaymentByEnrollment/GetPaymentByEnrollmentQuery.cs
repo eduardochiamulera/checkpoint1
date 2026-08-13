@@ -1,3 +1,4 @@
+using System;
 using Cursos.Application.Common;
 
 namespace Cursos.Application.Payments.GetPaymentByEnrollment;

@@ -1,5 +1,8 @@
+using System.Threading;
+using System.Threading.Tasks;
 using Cursos.Domain.Interfaces;
 using Cursos.Domain.Payments;
+using MediatR;
 
 namespace Cursos.Application.Payments.GetPaymentByEnrollment;
 

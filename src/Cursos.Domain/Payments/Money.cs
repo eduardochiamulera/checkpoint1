@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Cursos.Domain.Common;
 using Cursos.Domain.Exceptions;
 

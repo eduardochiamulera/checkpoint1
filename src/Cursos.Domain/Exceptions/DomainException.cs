@@ -1,3 +1,5 @@
+using System;
+
 namespace Cursos.Domain.Exceptions;
 
 public class DomainException : Exception

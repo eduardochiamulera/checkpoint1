@@ -1,4 +1,9 @@
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using Cursos.Application.Students.CreateStudent;
 using Cursos.Domain.Interfaces;
+using MediatR;
 
 namespace Cursos.Application.Students.UpdateStudent;
 

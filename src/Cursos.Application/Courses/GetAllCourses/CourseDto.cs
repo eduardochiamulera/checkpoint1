@@ -1,3 +1,5 @@
+using System;
+
 namespace Cursos.Application.Courses.GetAllCourses;
 
 public record CourseDto(

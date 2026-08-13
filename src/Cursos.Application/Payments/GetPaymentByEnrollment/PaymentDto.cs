@@ -1,3 +1,5 @@
+using System;
+
 namespace Cursos.Application.Payments.GetPaymentByEnrollment;
 
 public record PaymentDto(
