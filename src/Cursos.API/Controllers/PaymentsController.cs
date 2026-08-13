@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Cursos.Application.Payments.GetPaymentByEnrollment;
 using Cursos.Application.Payments.ProcessPayment;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -21,6 +22,7 @@ public class PaymentsController : ControllerBase
     }
     
     [HttpPost]
+    [Authorize(Roles = "Student,Admin")]
     [ProducesResponseType(typeof(PaymentResultDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<PaymentResultDto>> ProcessPayment(

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Cursos.Application.Courses.CreateCourse;
 using Cursos.Application.Courses.GetAllCourses;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -46,6 +47,7 @@ public class CoursesController : ControllerBase
     }
     
     [HttpPost]
+    [Authorize(Roles = "Admin,Instructor")]
     [ProducesResponseType(typeof(Application.Courses.CreateCourse.CourseDto), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<Application.Courses.CreateCourse.CourseDto>> Create(

@@ -8,6 +8,7 @@ using Cursos.Application.Enrollments.CreateEnrollment;
 using Cursos.Application.Enrollments.GetEnrollmentsByCourse;
 using Cursos.Application.Enrollments.GetEnrollmentsByStudent;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -47,6 +48,7 @@ public class EnrollmentsController : ControllerBase
     }
     
     [HttpPost]
+    [Authorize(Roles = "Student")]
     [ProducesResponseType(typeof(EnrollmentDto), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
