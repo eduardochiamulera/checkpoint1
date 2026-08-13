@@ -3,24 +3,14 @@ using Cursos.Infrastructure;
 using Cursos.Infrastructure.Data;
 using Cursos.Infrastructure.Security;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using System;
-using System.Collections.Generic;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -164,6 +154,10 @@ if (app.Environment.IsDevelopment())
 }
 
 app.Run();
+
+// Exposes Program as a public partial class so WebApplicationFactory<Program>
+// can be used from the test project (top-level statements alone do not do this).
+public partial class Program { }
 
 // Global Exception Handler
 public class GlobalExceptionHandler : IExceptionHandler
