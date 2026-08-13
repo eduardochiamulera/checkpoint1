@@ -3,24 +3,14 @@ using Cursos.Infrastructure;
 using Cursos.Infrastructure.Data;
 using Cursos.Infrastructure.Security;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using System;
-using System.Collections.Generic;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -43,7 +33,7 @@ builder.Services.AddSwaggerGen(options =>
         Version = "v1",
         Description = "API de cursos com autenticacao JWT"
     });
-    
+
     // Add JWT authentication to Swagger
     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
@@ -53,7 +43,7 @@ builder.Services.AddSwaggerGen(options =>
         Type = SecuritySchemeType.ApiKey,
         Scheme = "Bearer"
     });
-    
+
     options.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
         {
@@ -92,9 +82,9 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddAuthorization();
 
-// Health Checks
+// Health Checks (API self-check + MySQL database check)
 builder.Services.AddHealthChecks()
-    .AddCheck("self", () => HealthCheckResult.Healthy("API is running"))
+    .AddCheck("self", () => HealthCheckResult.Healthy("API is running"), tags: new[] { "api" })
     .AddMySql(
         connectionString: builder.Configuration.GetConnectionString("DefaultConnection")!,
         name: "mysql-server",
@@ -118,7 +108,7 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-// Logging Middleware
+// Logging Middleware (correlationId, userId, rota, status, elapsed time)
 app.UseMiddleware<Cursos.API.Middleware.LoggingMiddleware>();
 
 // Pipeline
@@ -134,7 +124,9 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.UseExceptionHandler();
 
-// Health Checks endpoint
+// Health Checks endpoints
+// GET /health         -> API + Database (visao completa)
+// GET /health/ready    -> Apenas Database (para readiness probes)
 app.MapHealthChecks("/health");
 app.MapHealthChecks("/health/ready", new HealthCheckOptions
 {
@@ -148,7 +140,7 @@ if (app.Environment.IsDevelopment())
 {
     using var scope = app.Services.CreateScope();
     var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    
+
     try
     {
         await context.Database.MigrateAsync();
@@ -167,19 +159,19 @@ app.Run();
 public class GlobalExceptionHandler : IExceptionHandler
 {
     private readonly ILogger<GlobalExceptionHandler> _logger;
-    
+
     public GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger)
     {
         _logger = logger;
     }
-    
+
     public async ValueTask<bool> TryHandleAsync(
         HttpContext httpContext,
         Exception exception,
         CancellationToken cancellationToken)
     {
         _logger.LogError(exception, "Unhandled exception occurred");
-        
+
         var problemDetails = new ProblemDetails
         {
             Status = StatusCodes.Status500InternalServerError,
@@ -187,11 +179,11 @@ public class GlobalExceptionHandler : IExceptionHandler
             Detail = "An unexpected error occurred. Please try again later.",
             Instance = $"{httpContext.Request.Method} {httpContext.Request.Path}"
         };
-        
+
         httpContext.Response.StatusCode = problemDetails.Status.Value;
         await httpContext.Response
             .WriteAsJsonAsync(problemDetails, cancellationToken);
-        
+
         return true;
     }
 }
