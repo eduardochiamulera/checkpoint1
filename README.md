@@ -1,243 +1,120 @@
-# Cursos API
+# Cursos - Clean Architecture
 
-API RESTful para gerenciamento de cursos, estudantes e matrículas, construída com .NET 9, ASP.NET Core Identity e JWT.
+## 🏗️ Estrutura do Projeto
 
-## Requisitos
+```
+Cursos.Architecture/
+├── src/
+│   ├── Cursos.Domain/          # Entidades, Value Objects, Interfaces
+│   ├── Cursos.Application/     # Use Cases, DTOs, Handlers (MediatR)
+│   ├── Cursos.Infrastructure/  # EF Core, Repositorios, Gateways
+│   └── Cursos.API/             # Controllers, Middleware
+└── tests/
+    ├── Cursos.Domain.Tests/
+    ├── Cursos.Application.Tests/
+    └── Cursos.Integration.Tests/
+```
 
-- [.NET 9 SDK](https://dotnet.microsoft.com/download/dotnet/9.0)
-- MySQL 8.0+
+## 📐 Regras de Dependencia
 
-## Como rodar localmente
+```
+API → Application → Domain
+Infrastructure → Domain
+```
+
+- **Domain**: Zero dependencias de outros projetos
+- **Application**: Depende apenas de Domain + MediatR
+- **Infrastructure**: Implementa interfaces de Domain
+- **API**: Orquestra Application + Infrastructure via DI
+
+## 🎯 Padroes Aplicados
+
+| Padrao | Localizacao | Proposito |
+|--------|-------------|-----------|
+| Repository | Domain/Interfaces | Abstrair persistencia |
+| Unit of Work | Domain/Interfaces | Transacoes |
+| Strategy | Infrastructure/Gateways | Troca de gateway de pagamento |
+| Command/Query | Application | Separacao de leitura/escrita |
+| Mediator | Application | Desacoplamento de handlers |
+| Aggregate Root | Domain/Payments | Garantir invariantes de dominio |
+| Value Object | Domain/Payments | Money como valor imutavel |
+
+## 🚀 Como Executar
 
 ```bash
-# 1. Clone o repositório
-git clone https://github.com/eduardochiamulera/checkpoint1.git
-cd checkpoint1
+# Build
+dotnet build Cursos.Architecture.sln
 
-# 2. Configure os segredos (nunca commitar esses valores)
-dotnet user-secrets set "ConnectionStrings:appConnection" "Server=localhost;Port=3306;Database=cursos_db;User=root;Password=sua_senha;"
-dotnet user-secrets set "Jwt:Key" "sua-chave-secreta-minimo-32-caracteres"
-dotnet user-secrets set "AdminUser:Password" "SenhaAdmin"
-dotnet user-secrets set "Jwt:Issuer" "Issuer"
-dotnet user-secrets set "Jwt:Audience" "Audience"
-
-# 3. Aplique as migrations (cria o banco e as tabelas)
-dotnet ef database update
-
-# 4. Rode a aplicação
+# Run API
+cd src/Cursos.API
 dotnet run
-```
 
-> **Referência de configuração:** copie `appsettings.example.json` para entender todas as chaves disponíveis. Nunca preencha valores reais no `appsettings.json`.
-
-## Acessando o Swagger
-
-Com a aplicação rodando, acesse:
-
-
-O Swagger abre na raiz. Para autenticar:
-
-1. Chame `POST /api/v1/auth/login` com email e senha do admin
-2. Copie o `accessToken` da resposta
-3. Clique no botão **Authorize** (cadeado) no topo do Swagger
-4. Cole o token no campo `Value` e clique em **Authorize**
-5. Todas as rotas protegidas agora funcionarão com seu token
-
-## Endpoints principais
-
-### Auth
-| Método | Rota | Descrição | Auth |
-|--------|------|-----------|------|
-| POST | `/api/v1/auth/register` | Registra Admin ou Instructor | Público |
-| POST | `/api/v1/auth/login` | Login, retorna JWT | Público |
-
-### Courses
-| Método | Rota | Descrição | Roles |
-|--------|------|-----------|-------|
-| GET | `/api/v1/courses` | Lista cursos paginados | Público |
-| GET | `/api/v1/courses/{id}` | Detalhe do curso | Público |
-| POST | `/api/v1/courses` | Criar curso | Admin, Instructor |
-| PUT | `/api/v1/courses/{id}` | Atualizar curso | Admin, Instructor |
-| DELETE | `/api/v1/courses/{id}` | Desativar curso | Admin |
-
-### Students
-| Método | Rota | Descrição | Roles |
-|--------|------|-----------|-------|
-| GET | `/api/v1/students` | Lista estudantes | Admin |
-| GET | `/api/v1/students/{id}` | Detalhe do estudante | Admin, próprio |
-| POST | `/api/v1/students` | Criar estudante | Admin |
-| PUT | `/api/v1/students/{id}` | Atualizar estudante | Admin, próprio |
-| DELETE | `/api/v1/students/{id}` | Desativar estudante | Admin |
-
-### Enrollments
-| Método | Rota | Descrição | Roles |
-|--------|------|-----------|-------|
-| POST | `/api/v1/enrollments` | Auto-matrícula | Student |
-| POST | `/api/v1/enrollments/admin` | Matricular estudante | Admin |
-| GET | `/api/v1/students/{id}/enrollments` | Matrículas do estudante | Admin, próprio |
-| DELETE | `/api/v1/enrollments/{id}` | Cancelar matrícula | Admin, próprio |
-
-## Migrations
-
-As migrations devem ser executadas na ordem criada pelo Entity Framework Core.
-
-### Criar uma migration
-
-```bash
-dotnet ef migrations add NomeDaMigration \
-  --context AppDataContext \
-  --output-dir Migrations
-```
-
-### Revisar o SQL
-
-```bash
-dotnet ef migrations script \
-  --context AppDataContext \
-  --output migrations.sql
-```
-
-### Aplicar migrations
-
-```bash
-dotnet ef database update \
-  --context AppDataContext
-```
-
-A migration `PaymentsConfiguration` cria as tabelas:
-
-- `Payments`;
-- `PaymentStatusTransitions`.
-
-Também são criadas as constraints, FKs e índices relacionados a pagamentos.
-
-### Rollback em desenvolvimento
-
-```bash
-dotnet ef database update 0 \
-  --context AppDataContext
-
-dotnet ef database update \
-  --context AppDataContext
-```
-
-O rollback deve ser executado somente em banco de desenvolvimento.
-
-Não registrar em logs dados de cartão, CVV, número do cartão,
-`ProviderPaymentId` ou a chave de idempotência completa.
-
-### Ordem das migrations
-
-As migrations devem ser aplicadas na ordem indicada pelo EF Core.
-
-```bash
-dotnet ef database update --context AppDataContext
-```
-
-A migration `AddPayments` depende das tabelas `Enrollments` e `AspNetUsers` já existentes.
-Ela cria `Payments`, `PaymentStatusTransitions`, constraints, FKs e índices.
-
-Para revisar o SQL antes da aplicação:
-
-```bash
-dotnet ef migrations script --context AppDataContext
-```
-
-Para testar rollback em desenvolvimento:
-
-```bash
-dotnet ef database update 0 --context AppDataContext
-dotnet ef database update --context AppDataContext
-```
-
-Não registrar em logs dados de cartão, CVV, número do cartão, `ProviderPaymentId` ou a chave de idempotência completa.
-
-## Dados iniciais (Seed)
-
-Na primeira execução, o sistema cria automaticamente:
-- Roles: `Admin`, `Instructor`, `Student`
-- Usuário admin com o email `admin@cursos.com` e a senha definida em `AdminUser:Password`
-
-## Erros comuns
-
-| Erro | Causa | Solução |
-|------|-------|---------|
-| `AdminUser:Password não configurado` | Secret ausente | Execute o `dotnet user-secrets set` acima |
-| `Unable to connect to MySQL` | Banco offline ou connection string errada | Verifique o MySQL e a string em user-secrets |
-| `401 Unauthorized` | Token expirado ou ausente | Refaça login e atualize o token no Swagger |
-| `403 Forbidden` | Role insuficiente | Verifique a role do usuário autenticado |
-| `409 Conflict` | Email duplicado ou matrícula existente | Use outro email ou verifique matrículas ativas |
-
-## Como rodar os testes
-
-```bash
+# Testes
 dotnet test
 ```
 
-Com a aplicação rodando, acesse:
+## 📝 Checklist de PR
 
-- Swagger UI: [http://localhost:5000/swagger](http://localhost:5000/swagger)
-- API: [http://localhost:5000](http://localhost:5000)
-- Swagger UI: [https://localhost:5001/swagger](https://localhost:5001/swagger)
+- [ ] Nova regra de negocio esta em Domain (nao em Controller)
+- [ ] Use Case criado em Application com Handler
+- [ ] Repository/Gateway implementado em Infrastructure
+- [ ] DTOs para entrada/saida (nao expor entidades)
+- [ ] Tratamento de erro com ProblemDetails
+- [ ] Logs estruturados (correlationId, userId)
+- [ ] Testes de unidade para Domain
+- [ ] Nullable enable em todos os projetos
 
-> Testes ainda não implementados nesta versão. Ver [CHANGELOG](./CHANGELOG.md).
+## 📊 Decision Log
 
-### Adapter de pagamento
+| Data | Decisao | Motivo |
+|------|---------|--------|
+| 2026-08-13 | Clean Architecture | Testabilidade, baixo acoplamento |
+| 2026-08-13 | MediatR para Use Cases | Separacao clara de responsabilidades |
+| 2026-08-13 | Strategy Pattern para gateways | Troca de provider sem mexer no Domain |
+| 2026-08-13 | Domain Events | Notificar mudancas de estado sem acoplamento |
 
-A aplicação utiliza `IPaymentGateway` para isolar a integração externa.
+## 🔑 Principais Conceitos
 
-A implementação atual é `SimulatedPaymentGateway`, registrada no DI como:
+### Domain Layer
+- **Agregados**: `Payment` é um agregado raiz que garante invariantes
+- **Value Objects**: `Money` é imutavel e define igualdade por valor
+- **Interfaces**: `IPaymentRepository`, `IPaymentGateway`, `IUnitOfWork`
+- **Excecoes de Dominio**: `DomainException` para regras de negocio violadas
 
-```csharp
-builder.Services.AddSingleton<IPaymentGateway, SimulatedPaymentGateway>();
-```
+### Application Layer
+- **Commands**: Operacoes de escrita (ex: `ProcessPaymentCommand`)
+- **Queries**: Operacoes de leitura (ex: `GetPaymentByEnrollmentQuery`)
+- **Handlers**: Implementacao da logica de aplicacao
+- **DTOs**: Objetos de transferencia de dados (nao expoe entidades)
 
-O gateway simulado possui respostas determinísticas:
+### Infrastructure Layer
+- **EF Core**: Mapeamento das entidades para banco de dados
+- **Repositorios**: Implementacao das interfaces de Domain
+- **Gateways**: Implementacao de servicos externos (pagamento, email, etc)
+- **DI**: Configuracao de injecao de dependencia
 
-- chave normal: sucesso;
-- chave contendo `fail` ou `error`: falha;
-- chave contendo `decline`: pagamento recusado;
-- chave contendo `timeout`: timeout.
+### API Layer
+- **Controllers**: Recebem HTTP requests e chamam MediatR
+- **Middleware**: Tratamento global de excecoes, logging, CORS
+- **Swagger**: Documentacao automatica da API
 
-A chave de idempotência é utilizada também no gateway simulado.
-Nenhum dado de cartão é armazenado ou enviado.
+## 🛡️ Boas Praticas
 
-Para trocar por um gateway real:
+1. **Domain Anemico**: Evitar! Regras de negocio ficam em Agregados/Servicos de Dominio
+2. **Nao expor entidades**: Usar sempre DTOs em entrada/saida
+3. **Interfaces pequenas (ISP)**: Separar contratos por responsabilidade
+4. **Idempotencia**: Validar antes de criar pagamentos duplicados
+5. **Logs estruturados**: Incluir correlationId, userId, rota, status
+6. **Testabilidade**: Testes de unidade no Domain, integracao para Repositorios/API
 
-1. Implemente `IPaymentGateway` em `RealPaymentGateway`.
-2. Use `HttpClient` e configuração externa para a URL do provedor.
-3. Armazene apenas IDs externos, recibos e status.
-4. Substitua o registro no `Program.cs`:
+## 📦 NuGet Packages
 
-```csharp
-builder.Services.AddHttpClient<IPaymentGateway, RealPaymentGateway>();
-```
+- `MediatR` (12.4.1) - Pattern Mediator para Commands/Queries
+- `Microsoft.EntityFrameworkCore.SqlServer` (9.0.0) - ORM
+- `Swashbuckle.AspNetCore` (6.9.0) - Swagger/OpenAPI
 
-O domínio e os casos de uso não precisam ser alterados.
+## 🔗 Referencias
 
-400 Bad Request
-- Amount ausente ou inválido.
-- EnrollmentId menor ou igual a zero.
-- Method ausente ou inválido.
-- Currency fora do formato.
-- Idempotency-Key ausente ou muito longa.
-
-401 Unauthorized
-- Token ausente.
-- Token inválido ou expirado.
-
-403 Forbidden
-- Student tentando acessar pagamento de outro usuário.
-
-404 Not Found
-- Pagamento ou matrícula inexistente.
-
-409 Conflict
-- Pagamento ativo já existente.
-- Idempotency-Key reutilizada com dados incompatíveis.
-
-422 Unprocessable Entity
-- Matrícula inativa.
-- Valor inválido para regra de negócio.
-- Pagamento recusado pelo gateway.
-- Transição de status inválida.
+- [Domain-Driven Design - Eric Evans](https://www.amazon.com/Domain-Driven-Design-Tackling-Complexity-Software/dp/0321125215)
+- [Clean Architecture - Robert C. Martin](https://www.amazon.com/Clean-Architecture-Craftsmans-Software-Structure/dp/0134494164)
+- [MediatR Documentation](https://github.com/jbogard/MediatR)
