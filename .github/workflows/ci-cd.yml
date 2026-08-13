@@ -17,6 +17,14 @@ jobs:
   build-and-test:
     name: Restore, Build & Test
     runs-on: ubuntu-latest
+    env:
+      # Testcontainers precisa de um Docker daemon acessivel.
+      # Runners ubuntu-latest ja tem Docker instalado e o socket disponivel por padrao,
+      # sem necessidade de montar volumes ou subir servicos adicionais.
+      DOCKER_HOST: unix:///var/run/docker.sock
+      # Evita que o Ryuk (container de limpeza do Testcontainers) trave em ambientes
+      # efemeros/restritos do runner; o proprio job do Actions ja limpa os containers ao final.
+      TESTCONTAINERS_RYUK_DISABLED: "true"
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -25,6 +33,12 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Verify Docker environment (required by Testcontainers)
+        run: |
+          docker version
+          docker info
+          echo "Docker daemon is reachable at $DOCKER_HOST"
 
       - name: Restore
         run: dotnet restore ${{ env.SOLUTION }}
