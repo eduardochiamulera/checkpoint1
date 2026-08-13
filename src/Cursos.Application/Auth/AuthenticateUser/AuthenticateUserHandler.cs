@@ -1,3 +1,5 @@
+using System.Threading;
+using System.Threading.Tasks;
 using Cursos.Application.Auth;
 using Cursos.Domain.Interfaces;
 using MediatR;
