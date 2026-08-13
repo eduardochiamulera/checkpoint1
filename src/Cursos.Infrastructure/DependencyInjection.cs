@@ -1,9 +1,9 @@
-using System;
 using Cursos.Domain.Interfaces;
 using Cursos.Domain.Payments;
 using Cursos.Infrastructure.Data;
 using Cursos.Infrastructure.Gateways;
 using Cursos.Infrastructure.Repositories;
+using Cursos.Infrastructure.Security;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -27,12 +27,26 @@ public static class DependencyInjection
         services.AddScoped<ICourseRepository, CourseRepository>();
         services.AddScoped<IStudentRepository, StudentRepository>();
         services.AddScoped<IEnrollmentRepository, EnrollmentRepository>();
+        services.AddScoped<IUserRepository, UserRepository>();
         
         // Unit of Work
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         
         // Payment Gateway (Strategy Pattern)
         services.AddPaymentGateway(configuration);
+        
+        // Security Services
+        services.AddScoped<IPasswordHasher, PasswordHasher>();
+        services.AddScoped<IJwtTokenGenerator>(sp =>
+        {
+            var jwtSettings = configuration.GetSection("JwtSettings");
+            return new JwtTokenGenerator(
+                secretKey: jwtSettings["SecretKey"] ?? throw new InvalidOperationException("JWT SecretKey not configured"),
+                issuer: jwtSettings["Issuer"] ?? "CursosAPI",
+                audience: jwtSettings["Audience"] ?? "CursosUsers",
+                expirationMinutes: int.Parse(jwtSettings["ExpirationMinutes"] ?? "60")
+            );
+        });
         
         return services;
     }
