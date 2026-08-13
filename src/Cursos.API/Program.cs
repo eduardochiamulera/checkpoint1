@@ -84,12 +84,11 @@ builder.Services.AddAuthorization();
 // Health Checks
 builder.Services.AddHealthChecks()
     .AddCheck("self", () => HealthCheckResult.Healthy("API is running"))
-    .AddSqlServer(
+    .AddMySql(
         connectionString: builder.Configuration.GetConnectionString("DefaultConnection")!,
-        healthQuery: "SELECT 1",
-        name: "sql-server",
+        name: "mysql-server",
         failureStatus: HealthStatus.Unhealthy,
-        tags: new[] { "database", "sql" });
+        tags: new[] { "database", "mysql" });
 
 // Exception Handling
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();

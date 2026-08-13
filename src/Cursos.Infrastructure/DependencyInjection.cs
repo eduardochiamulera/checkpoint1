@@ -7,6 +7,7 @@ using Cursos.Infrastructure.Security;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 
 namespace Cursos.Infrastructure;
 
@@ -18,8 +19,9 @@ public static class DependencyInjection
     {
         // DbContext
         services.AddDbContext<AppDbContext>(options =>
-            options.UseSqlServer(
+            options.UseMySql(
                 configuration.GetConnectionString("DefaultConnection"),
+                new MySqlServerVersion(new Version(8, 0)),
                 b => b.MigrationsAssembly(typeof(AppDbContext).Assembly.FullName)));
         
         // Repositories
