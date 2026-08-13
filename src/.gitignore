@@ -51,3 +51,6 @@ ehthumbs.db
 Desktop.ini
 
 comandos.txt
+
+**/[Bb]in/
+**/[Oo]bj/
