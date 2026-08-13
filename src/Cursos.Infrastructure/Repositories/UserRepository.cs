@@ -1,3 +1,6 @@
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 using Cursos.Domain.Entities;
 using Cursos.Domain.Interfaces;
 using Cursos.Infrastructure.Data;

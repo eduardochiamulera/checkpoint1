@@ -1,4 +1,5 @@
 using Cursos.Domain.Interfaces;
+using System;
 using System.Security.Cryptography;
 
 namespace Cursos.Infrastructure.Security;

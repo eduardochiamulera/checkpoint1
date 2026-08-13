@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+
 namespace Cursos.Application.Auth;
 
 public record AuthResultDto(

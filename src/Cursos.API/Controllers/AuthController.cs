@@ -1,7 +1,13 @@
+using System;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using Cursos.Application.Auth;
 using Cursos.Application.Auth.AuthenticateUser;
 using Cursos.Application.Auth.RegisterUser;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Cursos.API.Controllers;

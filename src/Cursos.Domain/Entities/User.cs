@@ -1,3 +1,7 @@
+using System;
+using System.Collections.Generic;
+using Cursos.Domain.Common;
+
 namespace Cursos.Domain.Entities;
 
 public class User : Entity

@@ -3,16 +3,19 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
+using Microsoft.Extensions.Logging;
 
 namespace Cursos.Application.Auth.Login;
 
 public class LoginHandler : IRequestHandler<LoginCommand, AuthResultDto>
 {
-    
-    public LoginHandler()
+    private readonly ILogger<LoginHandler> _logger;
+
+    public LoginHandler(ILogger<LoginHandler> logger)
     {
+        _logger = logger;
     }
-    
+
     public async Task<AuthResultDto> Handle(
         LoginCommand request, 
         CancellationToken cancellationToken)
@@ -20,7 +23,7 @@ public class LoginHandler : IRequestHandler<LoginCommand, AuthResultDto>
         // TODO: Implement actual authentication logic
         // This is a placeholder - should integrate with Identity or similar
         
-        // _logger.LogInformation("Login attempt for email: {Email}", request.Email);
+        _logger.LogInformation("Login attempt for email: {Email}", request.Email);
         
         // Simulated login - replace with actual auth logic
         var isValidCredentials = request.Email.Contains("@") && request.Password.Length >= 6;

@@ -1,3 +1,5 @@
+using System;
+using System.Linq;
 using Cursos.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;

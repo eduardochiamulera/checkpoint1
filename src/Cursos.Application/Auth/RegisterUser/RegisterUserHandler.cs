@@ -1,5 +1,8 @@
+using System.Threading;
+using System.Threading.Tasks;
 using Cursos.Domain.Entities;
 using Cursos.Domain.Interfaces;
+using MediatR;
 
 namespace Cursos.Application.Auth.RegisterUser;
 
