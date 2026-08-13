@@ -1,3 +1,6 @@
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 using Cursos.Domain.Payments;
 using Cursos.Infrastructure.Gateways;
 using FluentAssertions;

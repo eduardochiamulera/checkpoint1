@@ -1,3 +1,4 @@
+using System;
 using Cursos.Domain.Exceptions;
 using Cursos.Domain.Payments;
 using FluentAssertions;
