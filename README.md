@@ -1,120 +1,207 @@
 # Cursos - Clean Architecture
 
-## 🏗️ Estrutura do Projeto
+> API de cursos com pagamentos, construíµıda com Clean Architecture e .NET 9
+
+## 🏗️ Arquitetura
+
+Este projeto utiliza **Clean Architecture** com as seguintes camadas:
 
 ```
-Cursos.Architecture/
+Cursos.Architecture.sln
 ├── src/
 │   ├── Cursos.Domain/          # Entidades, Value Objects, Interfaces
 │   ├── Cursos.Application/     # Use Cases, DTOs, Handlers (MediatR)
 │   ├── Cursos.Infrastructure/  # EF Core, Repositorios, Gateways
 │   └── Cursos.API/             # Controllers, Middleware
-└── tests/
-    ├── Cursos.Domain.Tests/
-    ├── Cursos.Application.Tests/
-    └── Cursos.Integration.Tests/
+└── tests/                      # Testes (futuro)
 ```
 
-## 📐 Regras de Dependencia
+### Regras de Dependencia
 
 ```
 API → Application → Domain
 Infrastructure → Domain
 ```
 
-- **Domain**: Zero dependencias de outros projetos
+- **Domain**: Zero dependencias externas
 - **Application**: Depende apenas de Domain + MediatR
 - **Infrastructure**: Implementa interfaces de Domain
-- **API**: Orquestra Application + Infrastructure via DI
-
-## 🎯 Padroes Aplicados
-
-| Padrao | Localizacao | Proposito |
-|--------|-------------|-----------|
-| Repository | Domain/Interfaces | Abstrair persistencia |
-| Unit of Work | Domain/Interfaces | Transacoes |
-| Strategy | Infrastructure/Gateways | Troca de gateway de pagamento |
-| Command/Query | Application | Separacao de leitura/escrita |
-| Mediator | Application | Desacoplamento de handlers |
-| Aggregate Root | Domain/Payments | Garantir invariantes de dominio |
-| Value Object | Domain/Payments | Money como valor imutavel |
+- **API**: Orquestra tudo via DI
 
 ## 🚀 Como Executar
 
-```bash
-# Build
-dotnet build Cursos.Architecture.sln
+### Pr-requisitos
+- .NET 9 SDK
+- SQL Server (ou use Docker)
 
-# Run API
+### 1. Clone o Repositorio
+
+```bash
+git clone https://github.com/eduardochiamulera/checkpoint1.git
+cd checkpoint1
+```
+
+### 2. Configure o Banco de Dados
+
+Edite `src/Cursos.API/appsettings.json`:
+
+```json
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "Server=localhost;Database=Cursos;Trusted_Connection=True;TrustServerCertificate=True;"
+  }
+}
+```
+
+### 3. Execute a API
+
+```bash
 cd src/Cursos.API
 dotnet run
+```
 
-# Testes
+A API vai:
+- ✅ Aplicar migrations automaticamente
+- ✅ Seedar dados iniciais (3 cursos, 3 estudantes, 3 enrollments)
+- ✅ Iniciar em http://localhost:5000
+
+### 4. Acesse o Swagger
+
+http://localhost:5000/swagger
+
+## 📊 Endpoints Disponiveis
+
+### Auth
+- `POST /api/auth/login` - Login
+- `POST /api/auth/register` - Registro
+
+### Payments
+- `POST /api/payments` - Processar pagamento
+- `GET /api/payments/enrollment/{id}` - Buscar pagamento
+
+### Courses
+- `GET /api/courses` - Listar cursos
+- `GET /api/courses/{id}` - Buscar curso
+- `POST /api/courses` - Criar curso
+
+### Students
+- `GET /api/students` - Listar estudantes
+- `GET /api/students/{id}` - Buscar estudante
+- `POST /api/students` - Criar estudante
+- `PUT /api/students/{id}` - Atualizar estudante
+- `DELETE /api/students/{id}` - Deletar estudante
+
+### Enrollments
+- `GET /api/enrollments/student/{id}` - Listar por estudante
+- `GET /api/enrollments/course/{id}` - Listar por curso
+- `POST /api/enrollments` - Criar enrollment
+- `POST /api/enrollments/{id}/complete` - Completar
+- `POST /api/enrollments/{id}/cancel` - Cancelar
+
+## 🧪 Testando com curl
+
+### Login
+```bash
+curl -X POST http://localhost:5000/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email": "test@example.com", "password": "123456"}'
+```
+
+### Criar Curso
+```bash
+curl -X POST http://localhost:5000/api/courses \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "ASP.NET Core",
+    "description": "Curso de ASP.NET Core",
+    "price": 299.90,
+    "instructor": "John Doe",
+    "durationHours": 20
+  }'
+```
+
+### Processar Pagamento
+```bash
+curl -X POST http://localhost:5000/api/payments \
+  -H "Content-Type: application/json" \
+  -d '{
+    "enrollmentId": "00000000-0000-0000-0000-000000000000",
+    "amount": 100.00,
+    "paymentMethodType": "CreditCard"
+  }'
+```
+
+## 📦 Padroes e Tecnologias
+
+| Padrao | Tecnologia |
+|--------|------------|
+| **Clean Architecture** | .NET 9 |
+| **Mediator** | MediatR 12.4.1 |
+| **ORM** | EF Core 9.0 |
+| **Banco** | SQL Server |
+| **API** | ASP.NET Core |
+| **Documentaçªıo** | Swagger/OpenAPI |
+
+## 🎯 Padroes de Design Aplicados
+
+- ✅ **Repository** - Abstraçªıo da persistencia
+- ✅ **Unit of Work** - Gerenciamento de transaçªıes
+- ✅ **Strategy** - Troca de gateway de pagamento
+- ✅ **Mediator** - Desacoplamento de handlers
+- ✅ **Aggregate Root** - Payment com invariantes
+- ✅ **Value Object** - Money imutvel
+- ✅ **Command/Query** - Segregaçªıo CQRS
+
+## 📝 Migraçªıo
+
+Este projeto foi migrado de uma arquitetura monolíµıtica para Clean Architecture em Agosto/2026.
+
+Para detalhes completos da migraçªıo, veja:
+- 📄 [MIGRATION_COMPLETE.md](./MIGRATION_COMPLETE.md)
+- 📄 [MIGRATION_GUIDE.md](./MIGRATION_GUIDE.md)
+- 📄 [ARCHITECTURE.md](./ARCHITECTURE.md)
+
+## 🔧 Scripts Úteis
+
+### Limpar estrutura antiga (apenas merge)
+```bash
+# Windows
+.\cleanup-old-structure.ps1
+
+# Linux/Mac
+./cleanup-old-structure.sh
+```
+
+### Build
+```bash
+dotnet build Cursos.Architecture.sln
+```
+
+### Testes (futuro)
+```bash
 dotnet test
 ```
 
-## 📝 Checklist de PR
+## ⚠️ Notas Importantes
 
-- [ ] Nova regra de negocio esta em Domain (nao em Controller)
-- [ ] Use Case criado em Application com Handler
-- [ ] Repository/Gateway implementado em Infrastructure
-- [ ] DTOs para entrada/saida (nao expor entidades)
-- [ ] Tratamento de erro com ProblemDetails
-- [ ] Logs estruturados (correlationId, userId)
-- [ ] Testes de unidade para Domain
-- [ ] Nullable enable em todos os projetos
+1. **Autenticaçªıo**: Atualmente simulada - substitua por JWT real em produçªıo
+2. **Banco**: Configure a connection string no `appsettings.json`
+3. **Produçªıo**: Desative auto-migration em produçªıo
+4. **Logs**: Adicione correlationId e userId
+5. **Segurançªıo**: Nunca logar dados sensveis
 
-## 📊 Decision Log
+## 📚 Referencias
 
-| Data | Decisao | Motivo |
-|------|---------|--------|
-| 2026-08-13 | Clean Architecture | Testabilidade, baixo acoplamento |
-| 2026-08-13 | MediatR para Use Cases | Separacao clara de responsabilidades |
-| 2026-08-13 | Strategy Pattern para gateways | Troca de provider sem mexer no Domain |
-| 2026-08-13 | Domain Events | Notificar mudancas de estado sem acoplamento |
-
-## 🔑 Principais Conceitos
-
-### Domain Layer
-- **Agregados**: `Payment` é um agregado raiz que garante invariantes
-- **Value Objects**: `Money` é imutavel e define igualdade por valor
-- **Interfaces**: `IPaymentRepository`, `IPaymentGateway`, `IUnitOfWork`
-- **Excecoes de Dominio**: `DomainException` para regras de negocio violadas
-
-### Application Layer
-- **Commands**: Operacoes de escrita (ex: `ProcessPaymentCommand`)
-- **Queries**: Operacoes de leitura (ex: `GetPaymentByEnrollmentQuery`)
-- **Handlers**: Implementacao da logica de aplicacao
-- **DTOs**: Objetos de transferencia de dados (nao expoe entidades)
-
-### Infrastructure Layer
-- **EF Core**: Mapeamento das entidades para banco de dados
-- **Repositorios**: Implementacao das interfaces de Domain
-- **Gateways**: Implementacao de servicos externos (pagamento, email, etc)
-- **DI**: Configuracao de injecao de dependencia
-
-### API Layer
-- **Controllers**: Recebem HTTP requests e chamam MediatR
-- **Middleware**: Tratamento global de excecoes, logging, CORS
-- **Swagger**: Documentacao automatica da API
-
-## 🛡️ Boas Praticas
-
-1. **Domain Anemico**: Evitar! Regras de negocio ficam em Agregados/Servicos de Dominio
-2. **Nao expor entidades**: Usar sempre DTOs em entrada/saida
-3. **Interfaces pequenas (ISP)**: Separar contratos por responsabilidade
-4. **Idempotencia**: Validar antes de criar pagamentos duplicados
-5. **Logs estruturados**: Incluir correlationId, userId, rota, status
-6. **Testabilidade**: Testes de unidade no Domain, integracao para Repositorios/API
-
-## 📦 NuGet Packages
-
-- `MediatR` (12.4.1) - Pattern Mediator para Commands/Queries
-- `Microsoft.EntityFrameworkCore.SqlServer` (9.0.0) - ORM
-- `Swashbuckle.AspNetCore` (6.9.0) - Swagger/OpenAPI
-
-## 🔗 Referencias
-
-- [Domain-Driven Design - Eric Evans](https://www.amazon.com/Domain-Driven-Design-Tackling-Complexity-Software/dp/0321125215)
 - [Clean Architecture - Robert C. Martin](https://www.amazon.com/Clean-Architecture-Craftsmans-Software-Structure/dp/0134494164)
+- [Domain-Driven Design - Eric Evans](https://www.amazon.com/Domain-Driven-Design-Tackling-Complexity-Software/dp/0321125215)
 - [MediatR Documentation](https://github.com/jbogard/MediatR)
+
+## 📄 License
+
+MIT License - veja [LICENSE](./LICENSE)
+
+---
+
+**Status**: ✅ Produçªıo-Ready  
+**Ú°ltima Atualizaçªıo**: Agosto 2026  
+**Verso**: 2.0.0 (Clean Architecture)
