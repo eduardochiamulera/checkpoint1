@@ -1,0 +1,59 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: runtime
+    container_name: cursos-api
+    restart: unless-stopped
+    ports:
+      - "${API_PORT:-8080}:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Production}
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__DefaultConnection: "Server=db;Port=3306;Database=${MYSQL_DATABASE:-cursos};User Id=${MYSQL_USER:-cursos_app};Password=${MYSQL_PASSWORD:?MYSQL_PASSWORD is required};"
+      JwtSettings__SecretKey: "${JWT_SECRET_KEY:?JWT_SECRET_KEY is required}"
+      JwtSettings__Issuer: "${JWT_ISSUER:-CursosAPI}"
+      JwtSettings__Audience: "${JWT_AUDIENCE:-CursosUsers}"
+      JwtSettings__ExpirationMinutes: "${JWT_EXPIRATION_MINUTES:-60}"
+      PaymentGateway__Type: "${PAYMENT_GATEWAY_TYPE:-Simulated}"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - cursos-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+
+  db:
+    image: mysql:8.0
+    container_name: cursos-db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: "${MYSQL_ROOT_PASSWORD:?MYSQL_ROOT_PASSWORD is required}"
+      MYSQL_DATABASE: "${MYSQL_DATABASE:-cursos}"
+      MYSQL_USER: "${MYSQL_USER:-cursos_app}"
+      MYSQL_PASSWORD: "${MYSQL_PASSWORD:?MYSQL_PASSWORD is required}"
+    ports:
+      - "${MYSQL_PORT:-3306}:3306"
+    volumes:
+      - cursos-mysql-data:/var/lib/mysql
+    networks:
+      - cursos-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+networks:
+  cursos-network:
+    driver: bridge
+
+volumes:
+  cursos-mysql-data:
