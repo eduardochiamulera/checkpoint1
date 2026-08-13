@@ -1,17 +1,93 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Cursos\\Checkpoint1\\Cursos\\tests\\Cursos.Tests.csproj": {}
+    "C:\\Cursos\\checkpoint1\\tests\\Cursos.Tests.csproj": {}
   },
   "projects": {
-    "C:\\Cursos\\Checkpoint1\\Cursos\\src\\Cursos.csproj": {
+    "C:\\Cursos\\checkpoint1\\src\\Cursos.Application\\Cursos.Application.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Cursos\\Checkpoint1\\Cursos\\src\\Cursos.csproj",
-        "projectName": "Cursos",
-        "projectPath": "C:\\Cursos\\Checkpoint1\\Cursos\\src\\Cursos.csproj",
+        "projectUniqueName": "C:\\Cursos\\checkpoint1\\src\\Cursos.Application\\Cursos.Application.csproj",
+        "projectName": "Cursos.Application",
+        "projectPath": "C:\\Cursos\\checkpoint1\\src\\Cursos.Application\\Cursos.Application.csproj",
         "packagesPath": "C:\\Users\\eduardo.fraga\\.nuget\\packages\\",
-        "outputPath": "C:\\Cursos\\Checkpoint1\\Cursos\\src\\obj\\",
+        "outputPath": "C:\\Cursos\\checkpoint1\\src\\Cursos.Application\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\eduardo.fraga\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net9.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net9.0": {
+            "targetAlias": "net9.0",
+            "projectReferences": {
+              "C:\\Cursos\\checkpoint1\\src\\Cursos.Domain\\Cursos.Domain.csproj": {
+                "projectPath": "C:\\Cursos\\checkpoint1\\src\\Cursos.Domain\\Cursos.Domain.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.200"
+      },
+      "frameworks": {
+        "net9.0": {
+          "targetAlias": "net9.0",
+          "dependencies": {
+            "MediatR": {
+              "target": "Package",
+              "version": "[12.4.1, )"
+            },
+            "Microsoft.Extensions.Logging": {
+              "target": "Package",
+              "version": "[10.0.11, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.203/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "C:\\Cursos\\checkpoint1\\src\\Cursos.Domain\\Cursos.Domain.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Cursos\\checkpoint1\\src\\Cursos.Domain\\Cursos.Domain.csproj",
+        "projectName": "Cursos.Domain",
+        "projectPath": "C:\\Cursos\\checkpoint1\\src\\Cursos.Domain\\Cursos.Domain.csproj",
+        "packagesPath": "C:\\Users\\eduardo.fraga\\.nuget\\packages\\",
+        "outputPath": "C:\\Cursos\\checkpoint1\\src\\Cursos.Domain\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
@@ -46,44 +122,6 @@
       "frameworks": {
         "net9.0": {
           "targetAlias": "net9.0",
-          "dependencies": {
-            "Microsoft.AspNetCore.Authentication.JwtBearer": {
-              "target": "Package",
-              "version": "[9.0.0, )"
-            },
-            "Microsoft.AspNetCore.Identity.EntityFrameworkCore": {
-              "target": "Package",
-              "version": "[9.0.0, )"
-            },
-            "Microsoft.EntityFrameworkCore": {
-              "target": "Package",
-              "version": "[9.0.0, )"
-            },
-            "Microsoft.EntityFrameworkCore.Proxies": {
-              "target": "Package",
-              "version": "[9.0.0, )"
-            },
-            "Microsoft.EntityFrameworkCore.Tools": {
-              "target": "Package",
-              "version": "[9.0.0, )"
-            },
-            "Microsoft.OpenApi": {
-              "target": "Package",
-              "version": "[1.6.22, )"
-            },
-            "Pomelo.EntityFrameworkCore.MySql": {
-              "target": "Package",
-              "version": "[9.0.0, )"
-            },
-            "Swashbuckle.AspNetCore": {
-              "target": "Package",
-              "version": "[6.9.0, )"
-            },
-            "System.IdentityModel.Tokens.Jwt": {
-              "target": "Package",
-              "version": "[8.18.0, )"
-            }
-          },
           "imports": [
             "net461",
             "net462",
@@ -96,9 +134,6 @@
           "assetTargetFallback": true,
           "warn": true,
           "frameworkReferences": {
-            "Microsoft.AspNetCore.App": {
-              "privateAssets": "none"
-            },
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
@@ -107,14 +142,14 @@
         }
       }
     },
-    "C:\\Cursos\\Checkpoint1\\Cursos\\tests\\Cursos.Tests.csproj": {
+    "C:\\Cursos\\checkpoint1\\src\\Cursos.Infrastructure\\Cursos.Infrastructure.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Cursos\\Checkpoint1\\Cursos\\tests\\Cursos.Tests.csproj",
-        "projectName": "Cursos.Tests",
-        "projectPath": "C:\\Cursos\\Checkpoint1\\Cursos\\tests\\Cursos.Tests.csproj",
+        "projectUniqueName": "C:\\Cursos\\checkpoint1\\src\\Cursos.Infrastructure\\Cursos.Infrastructure.csproj",
+        "projectName": "Cursos.Infrastructure",
+        "projectPath": "C:\\Cursos\\checkpoint1\\src\\Cursos.Infrastructure\\Cursos.Infrastructure.csproj",
         "packagesPath": "C:\\Users\\eduardo.fraga\\.nuget\\packages\\",
-        "outputPath": "C:\\Cursos\\Checkpoint1\\Cursos\\tests\\obj\\",
+        "outputPath": "C:\\Cursos\\checkpoint1\\src\\Cursos.Infrastructure\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
@@ -132,8 +167,94 @@
           "net9.0": {
             "targetAlias": "net9.0",
             "projectReferences": {
-              "C:\\Cursos\\Checkpoint1\\Cursos\\src\\Cursos.csproj": {
-                "projectPath": "C:\\Cursos\\Checkpoint1\\Cursos\\src\\Cursos.csproj"
+              "C:\\Cursos\\checkpoint1\\src\\Cursos.Domain\\Cursos.Domain.csproj": {
+                "projectPath": "C:\\Cursos\\checkpoint1\\src\\Cursos.Domain\\Cursos.Domain.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.200"
+      },
+      "frameworks": {
+        "net9.0": {
+          "targetAlias": "net9.0",
+          "dependencies": {
+            "Microsoft.EntityFrameworkCore.Relational": {
+              "target": "Package",
+              "version": "[9.0.0, )"
+            },
+            "Pomelo.EntityFrameworkCore.MySql": {
+              "target": "Package",
+              "version": "[9.0.0, )"
+            },
+            "System.IdentityModel.Tokens.Jwt": {
+              "target": "Package",
+              "version": "[8.2.1, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.203/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "C:\\Cursos\\checkpoint1\\tests\\Cursos.Tests.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Cursos\\checkpoint1\\tests\\Cursos.Tests.csproj",
+        "projectName": "Cursos.Tests",
+        "projectPath": "C:\\Cursos\\checkpoint1\\tests\\Cursos.Tests.csproj",
+        "packagesPath": "C:\\Users\\eduardo.fraga\\.nuget\\packages\\",
+        "outputPath": "C:\\Cursos\\checkpoint1\\tests\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\eduardo.fraga\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net9.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net9.0": {
+            "targetAlias": "net9.0",
+            "projectReferences": {
+              "C:\\Cursos\\checkpoint1\\src\\Cursos.Application\\Cursos.Application.csproj": {
+                "projectPath": "C:\\Cursos\\checkpoint1\\src\\Cursos.Application\\Cursos.Application.csproj"
+              },
+              "C:\\Cursos\\checkpoint1\\src\\Cursos.Domain\\Cursos.Domain.csproj": {
+                "projectPath": "C:\\Cursos\\checkpoint1\\src\\Cursos.Domain\\Cursos.Domain.csproj"
+              },
+              "C:\\Cursos\\checkpoint1\\src\\Cursos.Infrastructure\\Cursos.Infrastructure.csproj": {
+                "projectPath": "C:\\Cursos\\checkpoint1\\src\\Cursos.Infrastructure\\Cursos.Infrastructure.csproj"
               }
             }
           }
@@ -156,31 +277,19 @@
           "dependencies": {
             "FluentAssertions": {
               "target": "Package",
-              "version": "[7.*, )"
-            },
-            "Microsoft.AspNetCore.Mvc.Testing": {
-              "target": "Package",
-              "version": "[9.*, )"
+              "version": "[6.12.1, )"
             },
             "Microsoft.EntityFrameworkCore.InMemory": {
               "target": "Package",
-              "version": "[9.*, )"
+              "version": "[9.0.0, )"
             },
             "Microsoft.NET.Test.Sdk": {
               "target": "Package",
-              "version": "[17.12.0, )"
+              "version": "[17.11.1, )"
             },
-            "MySql.EntityFrameworkCore": {
+            "NSubstitute": {
               "target": "Package",
-              "version": "[9.*, )"
-            },
-            "Testcontainers.MySql": {
-              "target": "Package",
-              "version": "[4.*, )"
-            },
-            "coverlet.collector": {
-              "target": "Package",
-              "version": "[6.0.2, )"
+              "version": "[5.1.0, )"
             },
             "xunit": {
               "target": "Package",

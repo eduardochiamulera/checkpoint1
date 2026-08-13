@@ -552,3 +552,10 @@ C:\Cursos\Checkpoint1\Cursos\tests\obj\Debug\net9.0\refint\Cursos.Tests.dll
 C:\Cursos\Checkpoint1\Cursos\tests\obj\Debug\net9.0\Cursos.Tests.pdb
 C:\Cursos\Checkpoint1\Cursos\tests\obj\Debug\net9.0\Cursos.Tests.genruntimeconfig.cache
 C:\Cursos\Checkpoint1\Cursos\tests\obj\Debug\net9.0\ref\Cursos.Tests.dll
+C:\Cursos\checkpoint1\tests\bin\Debug\net9.0\.msCoverageSourceRootsMapping_Cursos.Tests
+C:\Cursos\checkpoint1\tests\obj\Debug\net9.0\Cursos.Tests.csproj.AssemblyReference.cache
+C:\Cursos\checkpoint1\tests\obj\Debug\net9.0\Cursos.Tests.GeneratedMSBuildEditorConfig.editorconfig
+C:\Cursos\checkpoint1\tests\obj\Debug\net9.0\Cursos.Tests.AssemblyInfoInputs.cache
+C:\Cursos\checkpoint1\tests\obj\Debug\net9.0\Cursos.Tests.AssemblyInfo.cs
+C:\Cursos\checkpoint1\tests\obj\Debug\net9.0\Cursos.Tests.csproj.CoreCompileInputs.cache
+C:\Cursos\checkpoint1\tests\obj\Debug\net9.0\Cursos.Tests.sourcelink.json

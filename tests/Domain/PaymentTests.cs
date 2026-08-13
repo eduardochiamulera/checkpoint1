@@ -1,7 +1,8 @@
+using System;
 using Cursos.Domain.Exceptions;
 using Cursos.Domain.Payments;
-using Cursos.Domains.Payments;
 using FluentAssertions;
+using Xunit;
 
 namespace Cursos.Tests.Domain;
 

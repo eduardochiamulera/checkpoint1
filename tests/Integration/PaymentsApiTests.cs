@@ -4,6 +4,10 @@ using System.Net.Http.Json;
 using FluentAssertions;
 using Cursos.Tests.Fixtures;
 using System.Net.Http.Headers;
+using Xunit;
+using System.Threading.Tasks;
+using System.Net.Http;
+using System;
 
 namespace Cursos.Tests.Integration;
 

@@ -1,6 +1,8 @@
+using System.Threading.Tasks;
 using DotNet.Testcontainers.Builders;
 using DotNet.Testcontainers.Containers;
 using Testcontainers.MySql;
+using Xunit;
 
 namespace Cursos.Tests.Fixtures;
 

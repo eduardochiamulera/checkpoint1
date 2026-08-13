@@ -1,14 +1,15 @@
+using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.VisualStudio.TestPlatform.TestHost;
 
 namespace Cursos.Tests.Fixtures;
 
-public sealed class ApiFixture
-    : WebApplicationFactory<Program>,
-      IAsyncLifetime
+public sealed class ApiFixture : WebApplicationFactory<Program>, IAsyncLifetime
 {
     private readonly MySqlDatabaseFixture _database = new();
 

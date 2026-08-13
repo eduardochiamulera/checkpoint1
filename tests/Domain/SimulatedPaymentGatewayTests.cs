@@ -1,7 +1,9 @@
+using System;
+using System.Threading.Tasks;
 using Cursos.Domain.Payments;
-using Cursos.Domains.Payments;
-using Cursos.Services.Payments;
+using Cursos.Infrastructure.Gateways;
 using FluentAssertions;
+using Xunit;
 
 namespace Cursos.Tests.Domain;
 
