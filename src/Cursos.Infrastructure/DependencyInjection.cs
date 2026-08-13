@@ -1,3 +1,4 @@
+using System;
 using Cursos.Domain.Interfaces;
 using Cursos.Domain.Payments;
 using Cursos.Infrastructure.Data;
