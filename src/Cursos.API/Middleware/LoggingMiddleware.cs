@@ -69,7 +69,7 @@ public class LoggingMiddleware
         
         correlationId = Guid.NewGuid().ToString("N")[..8];
         context.Response.Headers["X-Correlation-ID"] = correlationId;
-        return correlationId;
+        return correlationId!;
     }
     
     private static string? GetUserId(HttpContext context)
